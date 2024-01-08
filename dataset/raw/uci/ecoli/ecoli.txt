@@ -1,0 +1,8 @@
+n_entradas= 7
+n_clases= 8
+n_arquivos= 1
+fich1= ecoli_R.dat
+n_patrons1= 336
+n_patrons_entrena= 168
+n_patrons_valida= 168
+n_conxuntos= 1

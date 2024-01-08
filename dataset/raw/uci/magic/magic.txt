@@ -1,0 +1,8 @@
+n_entradas= 10
+n_clases= 2
+n_arquivos= 1
+fich1= magic_R.dat
+n_patrons1= 19020
+n_patrons_entrena= 9510
+n_patrons_valida= 9510
+n_conxuntos= 1

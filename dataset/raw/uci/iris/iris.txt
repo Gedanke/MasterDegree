@@ -1,0 +1,8 @@
+n_entradas= 4
+n_clases= 3
+n_arquivos= 1
+fich1= iris_R.dat
+n_patrons1= 150
+n_patrons_entrena= 75
+n_patrons_valida= 75
+n_conxuntos= 1

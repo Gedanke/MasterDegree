@@ -1,0 +1,8 @@
+n_entradas= 4
+n_clases= 2
+n_arquivos= 1
+fich1= blood_R.dat
+n_patrons1= 748
+n_patrons_entrena= 374
+n_patrons_valida= 374
+n_conxuntos= 1

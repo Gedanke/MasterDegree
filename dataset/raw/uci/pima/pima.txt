@@ -1,0 +1,8 @@
+n_entradas= 8
+n_clases= 2
+n_arquivos= 1
+fich1= pima_R.dat
+n_patrons1= 768
+n_patrons_entrena= 384
+n_patrons_valida= 384
+n_conxuntos= 1

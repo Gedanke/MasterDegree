@@ -1,0 +1,8 @@
+n_entradas= 90
+n_clases= 15
+n_arquivos= 1
+fich1= libras_R.dat
+n_patrons1= 360
+n_patrons_entrena= 180
+n_patrons_valida= 180
+n_conxuntos= 1

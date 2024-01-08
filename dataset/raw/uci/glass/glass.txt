@@ -1,0 +1,8 @@
+n_entradas= 9
+n_clases= 6
+n_arquivos= 1
+fich1= glass_R.dat
+n_patrons1= 214
+n_patrons_entrena= 107
+n_patrons_valida= 107
+n_conxuntos= 1
