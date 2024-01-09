@@ -40,25 +40,24 @@
 
 ### 合成数据集
 
-| Dataset | Number of instances | Number of  features | Number of classes | Source |
-|:----:|:----:|:----:|:----:|:----:|
-| Aggregation | 788 | 2 | 2 |  |
-| Compound |  |  |  |  |
-| D31 | 3100 | 4 | 3 |  |
-| DIM512 | 1024 | 512 | 16 |  |
-| Flame | 240 | 2 | 2 |  |
-| Jain | 373 | 2 | 2 |  |
-| Pathbased |  |  |  |  |
-| R15 | 600 | 2 | 15 |  | 
-| S2 | 5000 | 2 | 15 |  |
-| Spiral | 412 | 2 | 3 |  |
+|   Dataset   | Number of instances | Number of  features | Number of classes | Source |
+| :---------: | :-----------------: | :-----------------: | :---------------: | :----: |
+| Aggregation |         788         |          2          |         7         |        |
+|  Compound  |                    |                    |                  |        |
+|     D31     |        3100        |          4          |        31        |        |
+|   DIM512   |        1024        |         512         |        16        |        |
+|    Flame    |         240         |          2          |         2         |        |
+|    Jain    |         373         |          2          |         2         |        |
+|  Pathbased  |                    |                    |                  |        |
+|     R15     |         600         |          2          |        15        |        |
+|     S2     |        5000        |          2          |        15        |        |
+|   Spiral   |         412         |          2          |         3         |        |
 
 Digits
 USPS
 MNIST-test
 Fashion
 Letter
-
 
 ## UCI 数据集
 
@@ -72,36 +71,36 @@ Letter
 
 Real-world datasets
 
-| Dataset | Number of instances | Number of  features | Number of classes | Source |
-|:----:|:----:|:----:|:----:|:----:|
-| Abalone |  |  |  |  |
-| Blood |  |  |  |  |
-| Coil20 |  |  |  |  |
-| Dermatology | 366 | 34 | 6 |  |
-| Ecoil |  |  |  |  |
-| Glass |  |  |  |  |
-| Iris | 150 | 4 | 3 |  |
-| Isolet | 1560 | 617 | 26 |  |
-| Jaffe | 213 | 65536 | 10 |  |
-| Letter |  |  |  |  |
-| libras |  |  |  |  |
-| Lung | 203 | 3312 | 5 |  |
-| Magic |  |  |  |  |
-| Parkinsons | 195 | 23 | 2 |  | 
-| Pima |  |  |  |  |
-| Seeds | 210 | 7 | 3 |  |
-| Segment | 2310 | 19 | 7 |  |
-| Sonar | 208 | 60 | 2 |  |
-| Spambase |  |  |  |  |
-| Teaching |  |  |  |  |
-| Tox_171 | 171 | 5748 | 4 |  |
-| Twonorm |  |  |  |  |
-| Usps |  |  |  |  |
-| WDBC | 569 | 30 | 2 |  |
-| Waveform | 5000 | 21 | 3 |  |
-| WaveformNoise |  |  |  |  |
-| Wdbc |  |  |  |  |
-| Wilt |  |  |  |  |
-| Wine | 178 | 13 | 3 |  |
+|    Dataset    | Number of instances | Number of  features | Number of classes | Source |
+| :-----------: | :-----------------: | :-----------------: | :---------------: | :----: |
+|    Abalone    |                    |                    |                  |        |
+|     Blood     |                    |                    |                  |        |
+|    Coil20    |                    |                    |                  |        |
+|  Dermatology  |         366         |         34         |         6         |        |
+|     Ecoil     |                    |                    |                  |        |
+|     Glass     |                    |                    |                  |        |
+|     Iris     |         150         |          4          |         3         |        |
+|    Isolet    |        1560        |         617         |        26        |        |
+|     Jaffe     |         213         |        65536        |        10        |        |
+|    Letter    |                    |                    |                  |        |
+|    libras    |                    |                    |                  |        |
+|     Lung     |         203         |        3312        |         5         |        |
+|     Magic     |                    |                    |                  |        |
+|  Parkinsons  |         195         |         23         |         2         |        |
+|     Pima     |                    |                    |                  |        |
+|     Seeds     |         210         |          7          |         3         |        |
+|    Segment    |        2310        |         19         |         7         |        |
+|     Sonar     |         208         |         60         |         2         |        |
+|   Spambase   |                    |                    |                  |        |
+|   Teaching   |                    |                    |                  |        |
+|    Tox_171    |         171         |        5748        |         4         |        |
+|    Twonorm    |                    |                    |                  |        |
+|     Usps     |                    |                    |                  |        |
+|     WDBC     |         569         |         30         |         2         |        |
+|   Waveform   |        5000        |         21         |         3         |        |
+| WaveformNoise |                    |                    |                  |        |
+|     Wdbc     |                    |                    |                  |        |
+|     Wilt     |                    |                    |                  |        |
+|     Wine     |         178         |         13         |         3         |        |
 
 ---

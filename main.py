@@ -26,10 +26,29 @@ def test_process():
     # dd.deal_synthesis()
     # dd.get_synthesis()
     dd = DealData("uci", param)
-    dd.deal_uci()
-    dd.get_uci()
+    # dd.deal_uci()
+    # dd.get_uci()
+
+
+def test_compare():
+    """_summary_"""
+    ck = ComKMeans(
+        "./dataset/experiment/synthesis/aggregation/aggregation.csv",
+        "./result/synthesis/",
+        7,
+        {},
+    )
+    # ck.cluster()
+    cap = ComAP(
+        "./dataset/experiment/synthesis/aggregation/aggregation.csv",
+        "./result/synthesis/",
+        7,
+        {},
+    )
+    cap.cluster()
 
 
 if __name__ == "__main__":
     """"""
-    test_process()
+    # test_process()
+    test_compare()

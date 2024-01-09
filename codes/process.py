@@ -10,7 +10,7 @@ from scipy.io import loadmat
 from .dataSetting import *
 
 """保留两位有效数字"""
-numpy.set_printoptions(precision=2)
+numpy.set_printoptions(precision=3)
 DATA_PATH = "./dataset/"
 
 
@@ -219,7 +219,9 @@ class DealData:
     def deal_image(self):
         """
         处理 raw 下的 image 数据集，将处理好的原始数据集存放到 data 下的 image 文件下
+        图像数据集冗余度高，建议不要用 csv 格式，这块之后再处理
         """
+        pass
 
     def get_demo(self):
         """
@@ -470,3 +472,4 @@ class DealData:
         """
         处理 data 路径下的 image 数据集，将实验所需的数据集存放到 experiment 下的 image 文件下(创建对应的数据集名命名的文件夹)
         """
+        pass
