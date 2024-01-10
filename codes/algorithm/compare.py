@@ -11,8 +11,8 @@ from sklearn.cluster import (
     Birch,
     DBSCAN,
     KMeans,
-    MiniBatchKMeans,
     MeanShift,
+    MiniBatchKMeans,
     OPTICS,
     SpectralClustering,
 )
@@ -27,9 +27,9 @@ class ComBase:
         """
         初始化相关成员
         Args:
-            path (_type_): 数据集文件路径
+            path (_type_): 数据集文件路径，最后一列是标签列，其余是数据列
             save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
-            num (int, optional): 类簇数量. Defaults to 0，为 0 表示没有标签列
+            num (int, optional): 类簇数量. Defaults to 0.
             params (dict, optional): 算法需要的参数. Defaults to {}.
         """
         """构造函数中的相关参数"""
@@ -37,7 +37,7 @@ class ComBase:
         self.path = path
         """保存结果的文件路径"""
         self.save_path = save_path
-        """聚类类簇数，必须指定，也可以从文件中读取得到(默认从最后一列中读取)"""
+        """聚类类簇数，必须指定"""
         self.num = num
         """从文件路径中获取文件名(不含后缀)"""
         self.data_name = os.path.splitext(os.path.split(self.path)[-1])[0]
@@ -59,17 +59,15 @@ class ComBase:
 
     def init_points_msg(self):
         """
-        加载数据
+        加载数据，输入的数据一定要满足预设要求
         """
         """读取 csv 文件全部内容"""
         self.samples = pandas.read_csv(self.path)
         col = list(self.samples.columns)
-
-        if self.num != 0:
-            """存在标签列"""
-            self.label_true = self.samples[col[-1]].tolist()
-            """切片数据列，不包括标签列"""
-            self.samples = numpy.array(self.samples.loc[:, col[0:-1]])
+        """self.samples，最后一列为标签列"""
+        self.label_true = self.samples[col[-1]].tolist()
+        """self.samples 其余列为数据列，不包括标签列"""
+        self.samples = numpy.array(self.samples.loc[:, col[0:-1]])
 
     def cluster(self):
         """
@@ -134,7 +132,7 @@ class ComAC(ComBase):
         Args:
             path (_type_): 数据集文件路径
             save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
-            num (int, optional): 类簇数量. Defaults to 0，为 0 表示没有标签列
+            num (int, optional): 类簇数量. Defaults to 0.
             params (dict, optional): 算法需要的参数. Defaults to {}.
         """
         super(ComAC, self).__init__(path, save_path, num, params)
@@ -172,7 +170,7 @@ class ComAC(ComBase):
             algorithm = AgglomerativeClustering(n_clusters=self.num)
 
         """预测标签"""
-        self.label_pred = algorithm.fit_predict(self.samples).tolist()
+        self.label_pred = algorithm.fit_predict(self.samples)
         """保存聚类结果"""
         self.save_result("agglomerativeClustering")
 
@@ -190,7 +188,7 @@ class ComAP(ComBase):
         Args:
             path (_type_): 数据集文件路径
             save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
-            num (int, optional): 类簇数量. Defaults to 0，为 0 表示没有标签列
+            num (int, optional): 类簇数量. Defaults to 0.
             params (dict, optional): 算法需要的参数. Defaults to {}.
         """
         super(ComAP, self).__init__(path, save_path, num, params)
@@ -209,12 +207,13 @@ class ComAP(ComBase):
             algorithm = AffinityPropagation()
 
         """预测标签"""
-        self.label_pred = algorithm.fit_predict(self.samples).tolist()
+        self.label_pred = algorithm.fit_predict(self.samples)
         """加入聚类中心坐标索引"""
         self.cluster_result["center"] = [
             int(numpy.where(center == self.samples)[0][0])
             for center in algorithm.cluster_centers_
         ]
+
         """预测的聚类结果超过一类，才有价值"""
         if len((set(self.label_pred))) > 1:
             """保存聚类结果"""
@@ -234,7 +233,7 @@ class ComBirch(ComBase):
         Args:
             path (_type_): 数据集文件路径
             save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
-            num (int, optional): 类簇数量. Defaults to 0，为 0 表示没有标签列
+            num (int, optional): 类簇数量. Defaults to 0.
             params (dict, optional): 算法需要的参数. Defaults to {}.
         """
         super(ComBirch, self).__init__(path, save_path, num, params)
@@ -253,7 +252,7 @@ class ComBirch(ComBase):
             algorithm = Birch(n_clusters=self.num)
 
         """预测标签"""
-        self.label_pred = algorithm.fit_predict(self.samples).tolist()
+        self.label_pred = algorithm.fit_predict(self.samples)
         """保存聚类结果"""
         self.save_result("birch")
 
@@ -273,7 +272,7 @@ class ComDBSCAN(ComBase):
         Args:
             path (_type_): 数据集文件路径
             save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
-            num (int, optional): 类簇数量. Defaults to 0，为 0 表示没有标签列
+            num (int, optional): 类簇数量. Defaults to 0.
             params (dict, optional): 算法需要的参数. Defaults to {}.
         """
         super(ComDBSCAN, self).__init__(path, save_path, num, params)
@@ -299,7 +298,7 @@ class ComDBSCAN(ComBase):
             algorithm = DBSCAN()
 
         """预测标签"""
-        self.label_pred = algorithm.fit_predict(self.samples).tolist()
+        self.label_pred = algorithm.fit_predict(self.samples)
         """预测的聚类结果超过一类，才有价值"""
         if len((set(self.label_pred))) > 0:
             """保存聚类结果"""
@@ -319,7 +318,7 @@ class ComKMeans(ComBase):
         Args:
             path (_type_): 数据集文件路径
             save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
-            num (int, optional): 类簇数量. Defaults to 0，为 0 表示没有标签列
+            num (int, optional): 类簇数量. Defaults to 0.
             params (dict, optional): 算法需要的参数. Defaults to {}.
         """
         super(ComKMeans, self).__init__(path, save_path, num, params)
@@ -343,7 +342,7 @@ class ComKMeans(ComBase):
             self.algorithm_name = "kmeans"
 
         """预测标签"""
-        self.label_pred = algorithm.fit_predict(self.samples).tolist()
+        self.label_pred = algorithm.fit_predict(self.samples)
         """加入聚类中心坐标"""
         self.cluster_result["center"] = numpy.around(
             algorithm.cluster_centers_, decimals=3
@@ -365,7 +364,7 @@ class ComMeanShit(ComBase):
         Args:
             path (_type_): 数据集文件路径
             save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
-            num (int, optional): 类簇数量. Defaults to 0，为 0 表示没有标签列
+            num (int, optional): 类簇数量. Defaults to 0.
             params (dict, optional): 算法需要的参数. Defaults to {}.
         """
         super(ComMeanShit, self).__init__(path, save_path, num, params)
@@ -384,7 +383,7 @@ class ComMeanShit(ComBase):
             algorithm = MeanShift()
 
         """预测标签"""
-        self.label_pred = algorithm.fit_predict(self.samples).tolist()
+        self.label_pred = algorithm.fit_predict(self.samples)
         """加入聚类中心坐标"""
         self.cluster_result["center"] = algorithm.cluster_centers_.tolist()
         """预测的聚类结果超过一类，才有价值"""
@@ -408,7 +407,7 @@ class ComOPTICS(ComBase):
         Args:
             path (_type_): 数据集文件路径
             save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
-            num (int, optional): 类簇数量. Defaults to 0，为 0 表示没有标签列
+            num (int, optional): 类簇数量. Defaults to 0.
             params (dict, optional): 算法需要的参数. Defaults to {}.
         """
         super(ComOPTICS, self).__init__(path, save_path, num, params)
@@ -434,7 +433,7 @@ class ComOPTICS(ComBase):
             algorithm = OPTICS()
 
         """预测标签"""
-        self.label_pred = algorithm.fit_predict(self.samples).tolist()
+        self.label_pred = algorithm.fit_predict(self.samples)
         """预测的聚类结果超过一类，才有价值"""
         if len((set(self.label_pred))) > 1:
             """保存聚类结果"""
@@ -455,7 +454,7 @@ class ComSC(ComBase):
         Args:
             path (_type_): 数据集文件路径
             save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
-            num (int, optional): 类簇数量. Defaults to 0，为 0 表示没有标签列
+            num (int, optional): 类簇数量. Defaults to 0.
             params (dict, optional): 算法需要的参数. Defaults to {}.
         """
         super(ComSC, self).__init__(path, save_path, num, params)
@@ -477,6 +476,6 @@ class ComSC(ComBase):
             algorithm = SpectralClustering(n_clusters=self.num)
 
         """预测标签"""
-        self.label_pred = algorithm.fit_predict(self.samples).tolist()
+        self.label_pred = algorithm.fit_predict(self.samples)
         """保存聚类结果"""
         self.save_result("spectralClustering")

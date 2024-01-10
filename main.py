@@ -38,7 +38,7 @@ def test_compare():
         7,
         {},
     )
-    # ck.cluster()
+    ck.cluster()
     cap = ComAP(
         "./dataset/experiment/synthesis/aggregation/aggregation.csv",
         "./result/synthesis/",
@@ -48,7 +48,25 @@ def test_compare():
     cap.cluster()
 
 
+def test_dpc():
+    """ """
+    dpc = Dpc(
+        "./dataset/experiment/synthesis/spiral/spiral.csv",
+        "./result/synthesis/",
+        3,
+        1.8,
+        1,
+        0,
+        0,
+        "euclidean",
+        [],
+        False,
+    )
+    dpc.cluster()
+
+
 if __name__ == "__main__":
     """"""
     # test_process()
-    test_compare()
+    # test_compare()
+    test_dpc()
