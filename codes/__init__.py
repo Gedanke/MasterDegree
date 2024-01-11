@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-from .process import *
 from .algorithm import *
+from .process import *
+from .plot import *

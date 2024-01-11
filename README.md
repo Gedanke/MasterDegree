@@ -7,6 +7,19 @@
 ## 项目结构
 
 * [codes](codes) 代码块
+  * [algorithm](./codes/algorithm/) 算法模块
+    * [__init__.py](./codes/algorithm/__init__.py) 包文件
+    * [setting.py](./codes/algorithm/setting.py) 配置文件
+    * [compare.py](./codes/algorithm/compare.py) 对 sklearn 中的算法
+    * [dpc.py](./codes/algorithm/dpc.py) dpc 基类算法
+    * [dpcs.py](./codes/algorithm/dpcs.py) dpc 系列对比算法
+    * [dpcm.py](./codes/algorithm/dpcm.py) 本文改进的三个 dpc 算法
+  * [__init__.py](./codes/__init__.py) 包文件
+  * [process.py](./codes/process.py) 数据处理文件
+  * [dataSetting.py](./codes/dataSetting.py) 数据设置算法的实验参数
+  * [experiment.py](./codes/experiment.py) 算法根据设置的参数在不同数据运行获得实验结果
+  * [analyze.py](./codes/analyze.py) 对算法在数据集上获得的结果进行分析
+  * [plot.py](./codes/plot.py) 根据结果绘制图
 * [dataset](dataset) 数据块
   * [raw](dataset/raw) 原始数据
     * [demo](dataset/raw/demo/)

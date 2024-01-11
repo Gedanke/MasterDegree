@@ -3,3 +3,4 @@
 
 from .compare import *
 from .dpc import *
+from .dpcm import *
