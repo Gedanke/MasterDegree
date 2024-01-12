@@ -5,6 +5,7 @@ import copy
 import os.path
 import matplotlib.pyplot as plt
 from multiprocessing.pool import Pool
+from .experiment import *
 
 
 """

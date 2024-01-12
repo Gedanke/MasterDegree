@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
+# import sys
+# import os
+
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# sys.path.append(BASE_DIR)
+
 from codes import *
 
 
@@ -65,8 +71,16 @@ def test_dpc():
     dpc.cluster()
 
 
+def test_datasets():
+    """
+    统计数据集信息
+    """
+    test_dataset("synthesis")
+
+
 if __name__ == "__main__":
     """"""
     # test_process()
     # test_compare()
-    test_dpc()
+    # test_dpc()
+    test_datasets()

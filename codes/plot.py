@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import manhattan_distances, euclidean_distances
 import scipy.cluster.hierarchy as sch
 from multiprocessing.pool import Pool
-
+from .analyze import *
 
 """
 绘图
