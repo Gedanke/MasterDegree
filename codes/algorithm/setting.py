@@ -5,6 +5,272 @@ import numpy
 from munkres import Munkres
 from sklearn.metrics.cluster import *
 
+"""
+数据集的基本信息
+"""
+"""合成数据集"""
+synthesis_data = {
+    "aggregation": {
+        "path": "./dataset/experiment/synthesis/aggregation/aggregation.csv",
+        "save_path": "./result/synthesis/",
+        "samples_num": 788,
+        "features_num": 2,
+        "num": 7,
+    },
+    "compound": {
+        "path": "./dataset/experiment/synthesis/compound/compound.csv",
+        "save_path": "./result/synthesis/",
+        "samples_num": 399,
+        "features_num": 2,
+        "num": 6,
+    },
+    "D31": {
+        "path": "./dataset/experiment/synthesis/D31/D31.csv",
+        "save_path": "./result/synthesis/",
+        "samples_num": 3100,
+        "features_num": 2,
+        "num": 31,
+    },
+    "flame": {
+        "path": "./dataset/experiment/synthesis/flame/flame.csv",
+        "save_path": "./result/synthesis/",
+        "samples_num": 240,
+        "features_num": 2,
+        "num": 2,
+    },
+    "jain": {
+        "path": "./dataset/experiment/synthesis/jain/jain.csv",
+        "save_path": "./result/synthesis/",
+        "samples_num": 373,
+        "features_num": 2,
+        "num": 2,
+    },
+    "pathbased": {
+        "path": "./dataset/experiment/synthesis/pathbased/pathbased.csv",
+        "save_path": "./result/synthesis/",
+        "samples_num": 300,
+        "features_num": 2,
+        "num": 3,
+    },
+    "R15": {
+        "path": "./dataset/experiment/synthesis/R15/R15.csv",
+        "save_path": "./result/synthesis/",
+        "samples_num": 600,
+        "features_num": 2,
+        "num": 15,
+    },
+    "S2": {
+        "path": "./dataset/experiment/synthesis/S2/S2.csv",
+        "save_path": "./result/synthesis/",
+        "samples_num": 5000,
+        "features_num": 2,
+        "num": 15,
+    },
+    "spiral": {
+        "path": "./dataset/experiment/synthesis/spiral/spiral.csv",
+        "save_path": "./result/synthesis/",
+        "samples_num": 312,
+        "features_num": 2,
+        "num": 3,
+    },
+}
+"""uci 数据集"""
+uci_data = {
+    "abalone": {
+        "path": "./dataset/experiment/uci/abalone/abalone.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 4177,
+        "features_num": 8,
+        "num": 3,
+    },
+    "blood": {
+        "path": "./dataset/experiment/uci/blood/blood.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 748,
+        "features_num": 5,
+        "num": 2,
+    },
+    "dermatology": {
+        "path": "./dataset/experiment/uci/dermatology/dermatology.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 366,
+        "features_num": 34,
+        "num": 6,
+    },
+    "ecoli": {
+        "path": "./dataset/experiment/uci/ecoli/ecoli.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 336,
+        "features_num": 7,
+        "num": 8,
+    },
+    "glass": {
+        "path": "./dataset/experiment/uci/glass/glass.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 214,
+        "features_num": 9,
+        "num": 6,
+    },
+    "iris": {
+        "path": "./dataset/experiment/uci/iris/iris.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 150,
+        "features_num": 4,
+        "num": 3,
+    },
+    "isolet": {
+        "path": "./dataset/experiment/uci/isolet/isolet.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 1560,
+        "features_num": 617,
+        "num": 26,
+    },
+    "jaffe": {
+        "path": "./dataset/experiment/uci/jaffe/jaffe.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 213,
+        "features_num": 65536,
+        "num": 10,
+    },
+    "letter": {
+        "path": "./dataset/experiment/uci/letter/letter.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 20000,
+        "features_num": 16,
+        "num": 26,
+    },
+    "libras": {
+        "path": "./dataset/experiment/uci/libras/libras.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 360,
+        "features_num": 90,
+        "num": 15,
+    },
+    "lung": {
+        "path": "./dataset/experiment/uci/lung/lung.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 203,
+        "features_num": 3312,
+        "num": 5,
+    },
+    "magic": {
+        "path": "./dataset/experiment/uci/magic/magic.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 19020,
+        "features_num": 10,
+        "num": 2,
+    },
+    "parkinsons": {
+        "path": "./dataset/experiment/uci/parkinsons/parkinsons.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 195,
+        "features_num": 23,
+        "num": 2,
+    },
+    "pima": {
+        "path": "./dataset/experiment/uci/pima/pima.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 768,
+        "features_num": 8,
+        "num": 2,
+    },
+    "seeds": {
+        "path": "./dataset/experiment/uci/seeds/seeds.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 210,
+        "features_num": 7,
+        "num": 3,
+    },
+    "segment": {
+        "path": "./dataset/experiment/uci/segment/segment.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 2310,
+        "features_num": 19,
+        "num": 7,
+    },
+    "sonar": {
+        "path": "./dataset/experiment/uci/sonar/sonar.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 208,
+        "features_num": 60,
+        "num": 2,
+    },
+    "spambase": {
+        "path": "./dataset/experiment/uci/spambase/spambase.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 4601,
+        "features_num": 57,
+        "num": 2,
+    },
+    "teaching": {
+        "path": "./dataset/experiment/uci/teaching/teaching.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 151,
+        "features_num": 5,
+        "num": 3,
+    },
+    "tox171": {
+        "path": "./dataset/experiment/uci/tox171/tox171.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 171,
+        "features_num": 5748,
+        "num": 4,
+    },
+    "twonorm": {
+        "path": "./dataset/experiment/uci/twonorm/twonorm.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 7400,
+        "features_num": 20,
+        "num": 2,
+    },
+    "usps": {
+        "path": "./dataset/experiment/uci/usps/usps.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 11000,
+        "features_num": 256,
+        "num": 10,
+    },
+    "waveform": {
+        "path": "./dataset/experiment/uci/waveform/waveform.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 5000,
+        "features_num": 21,
+        "num": 3,
+    },
+    "waveformNoise": {
+        "path": "./dataset/experiment/uci/waveformNoise/waveformNoise.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 5000,
+        "features_num": 40,
+        "num": 3,
+    },
+    "wdbc": {
+        "path": "./dataset/experiment/uci/wdbc/wdbc.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 569,
+        "features_num": 30,
+        "num": 2,
+    },
+    "wilt": {
+        "path": "./dataset/experiment/uci/wilt/wilt.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 4839,
+        "features_num": 5,
+        "num": 2,
+    },
+    "wine": {
+        "path": "./dataset/experiment/uci/wine/wine.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 178,
+        "features_num": 13,
+        "num": 3,
+    },
+}
+
+"""
+一些公用的函数
+"""
+
 
 def cluster_acc(label_true, label_pred):
     """

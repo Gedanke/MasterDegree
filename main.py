@@ -28,12 +28,12 @@ def test_process():
     # dd = DealData("demo", param)
     # dd.deal_demo()
     # dd.get_demo()
-    # dd = DealData("synthesis", param)
-    # dd.deal_synthesis()
-    # dd.get_synthesis()
+    dd = DealData("synthesis", param)
+    dd.deal_synthesis()
+    dd.get_synthesis()
     dd = DealData("uci", param)
-    # dd.deal_uci()
-    # dd.get_uci()
+    dd.deal_uci()
+    dd.get_uci()
 
 
 def test_compare():
@@ -76,6 +76,7 @@ def test_datasets():
     统计数据集信息
     """
     test_dataset("synthesis")
+    test_dataset("uci")
 
 
 if __name__ == "__main__":

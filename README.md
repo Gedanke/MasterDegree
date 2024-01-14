@@ -9,17 +9,18 @@
 * [codes](codes) 代码块
   * [algorithm](./codes/algorithm/) 算法模块
     * [__init__.py](./codes/algorithm/__init__.py) 包文件
-    * [setting.py](./codes/algorithm/setting.py) 配置文件
+    * [setting.py](./codes/algorithm/setting.py) 一些公用的函数，以及数据集的基本信息
     * [compare.py](./codes/algorithm/compare.py) 对 sklearn 中的算法
     * [dpc.py](./codes/algorithm/dpc.py) dpc 基类算法
     * [dpcs.py](./codes/algorithm/dpcs.py) dpc 系列对比算法
     * [dpcm.py](./codes/algorithm/dpcm.py) 本文改进的三个 dpc 算法
   * [__init__.py](./codes/__init__.py) 包文件
   * [process.py](./codes/process.py) 数据处理文件
-  * [dataSetting.py](./codes/dataSetting.py) 数据设置算法的实验参数
+  * [dataSetting.py](./codes/dataSetting.py) 一些公用的函数
   * [experiment.py](./codes/experiment.py) 算法根据设置的参数在不同数据运行获得实验结果
   * [analyze.py](./codes/analyze.py) 对算法在数据集上获得的结果进行分析
   * [plot.py](./codes/plot.py) 根据结果绘制图
+  * [conf.json](./codes/conf.json) 不同算法在不同数据集上的设置参数
 * [dataset](dataset) 数据块
   * [raw](dataset/raw) 原始数据
     * [demo](dataset/raw/demo/)
@@ -53,18 +54,18 @@
 
 ### 合成数据集
 
-|   Dataset   | Number of instances | Number of  features | Number of classes | Source |
+| Dataset | Number of instances | Number of features | Number of classes | Source |
 | :---------: | :-----------------: | :-----------------: | :---------------: | :----: |
-| Aggregation |         788         |          2          |         7         |        |
-|  Compound  |                    |                    |                  |        |
-|     D31     |        3100        |          4          |        31        |        |
-|   DIM512   |        1024        |         512         |        16        |        |
-|    Flame    |         240         |          2          |         2         |        |
-|    Jain    |         373         |          2          |         2         |        |
-|  Pathbased  |                    |                    |                  |        |
-|     R15     |         600         |          2          |        15        |        |
-|     S2     |        5000        |          2          |        15        |        |
-|   Spiral   |         412         |          2          |         3         |        |
+| Aggregation | 788 | 2 | 7 |  |
+| Compound | 399 | 2 | 2 |  |
+| D31 | 3100 | 2 | 31 |  |
+| DIM512 | 1024 | 512 | 16 |  |
+| Flame | 240 | 2 | 2 |  |
+| Jain | 373 | 2 | 2 |  |
+| Pathbased | 300 | 2 | 3 |  |
+| R15 | 600 | 2 | 15 |  |
+| S2 | 5000 | 2 | 15 |  |
+| Spiral | 412 | 2 | 3 |  |
 
 Digits
 USPS
@@ -84,36 +85,35 @@ Letter
 
 Real-world datasets
 
-|    Dataset    | Number of instances | Number of  features | Number of classes | Source |
+| Dataset | Number of instances | Number of  features | Number of classes | Source |
 | :-----------: | :-----------------: | :-----------------: | :---------------: | :----: |
-|    Abalone    |                    |                    |                  |        |
-|     Blood     |                    |                    |                  |        |
-|    Coil20    |                    |                    |                  |        |
-|  Dermatology  |         366         |         34         |         6         |        |
-|     Ecoil     |                    |                    |                  |        |
-|     Glass     |                    |                    |                  |        |
-|     Iris     |         150         |          4          |         3         |        |
-|    Isolet    |        1560        |         617         |        26        |        |
-|     Jaffe     |         213         |        65536        |        10        |        |
-|    Letter    |                    |                    |                  |        |
-|    libras    |                    |                    |                  |        |
-|     Lung     |         203         |        3312        |         5         |        |
-|     Magic     |                    |                    |                  |        |
-|  Parkinsons  |         195         |         23         |         2         |        |
-|     Pima     |                    |                    |                  |        |
-|     Seeds     |         210         |          7          |         3         |        |
-|    Segment    |        2310        |         19         |         7         |        |
-|     Sonar     |         208         |         60         |         2         |        |
-|   Spambase   |                    |                    |                  |        |
-|   Teaching   |                    |                    |                  |        |
-|    Tox_171    |         171         |        5748        |         4         |        |
-|    Twonorm    |                    |                    |                  |        |
-|     Usps     |                    |                    |                  |        |
-|     WDBC     |         569         |         30         |         2         |        |
-|   Waveform   |        5000        |         21         |         3         |        |
-| WaveformNoise |                    |                    |                  |        |
-|     Wdbc     |                    |                    |                  |        |
-|     Wilt     |                    |                    |                  |        |
-|     Wine     |         178         |         13         |         3         |        |
+| Abalone | 4177 | 8 | 3 |  |
+| Blood | 784 | 5 | 2 |  |
+| Coil20 |  |  |   |  |
+| Dermatology | 366 | 34 | 6 |  |
+| Ecoil | 336 | 7 | 8 |  |
+| Glass | 214 | 9 | 6 |  |
+| Iris | 150 | 4 | 3 |  |
+| Isolet | 1560  | 617 | 26 |  |
+| Jaffe | 213 | 65536 | 10 |  |
+| Letter | 20000 | 16 | 26 |  |
+| libras | 360 | 90 | 15 |  |
+| Lung | 203 | 3312 | 5 |  |
+| Magic | 19020 | 10 | 2 |  |
+| Parkinsons | 195 | 23 | 2 |  |
+| Pima | 768 | 8 | 2 |  |
+| Seeds | 210 | 7 | 3 |  |
+| Segment | 2310 | 19 | 7 |  |
+| Sonar | 208 | 60 | 2 |  |
+| Spambase | 4601 | 57 | 2 |  |
+| Teaching | 151 | 5 | 3 |  |
+| Tox_171 | 171 | 5748 | 4 |  |
+| Twonorm | 7400 | 20 | 2 |  |
+| Usps | 11000 | 256 | 10 |  |
+| Waveform | 5000 | 21 | 3 |  |
+| WaveformNoise | 5000 | 40 | 3 |  |
+| Wdbc | 569 | 30 | 2 |  |
+| Wilt | 4839 | 13 | 3 |  |
+| Wine | 178 | 13 | 3 |  |
 
 ---
