@@ -16,11 +16,11 @@
     * [dpcm.py](./codes/algorithm/dpcm.py) 本文改进的三个 dpc 算法
   * [__init__.py](./codes/__init__.py) 包文件
   * [process.py](./codes/process.py) 数据处理文件
-  * [dataSetting.py](./codes/dataSetting.py) 一些公用的函数
+  * [dataSetting.py](./codes/dataSetting.py) 一些公用的函数，不同算法在不同数据集上的设置参数
   * [experiment.py](./codes/experiment.py) 算法根据设置的参数在不同数据运行获得实验结果
   * [analyze.py](./codes/analyze.py) 对算法在数据集上获得的结果进行分析
   * [plot.py](./codes/plot.py) 根据结果绘制图
-  * [conf.json](./codes/conf.json) 不同算法在不同数据集上的设置参数
+  * [conf.json](./codes/conf.json) 不同算法在不同数据集上的结果记录
 * [dataset](dataset) 数据块
   * [raw](dataset/raw) 原始数据
     * [demo](dataset/raw/demo/)

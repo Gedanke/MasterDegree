@@ -17,10 +17,10 @@ class Dpc:
     def __init__(
         self,
         path,
-        save_path="../../results/",
+        save_path="./result/",
         num=0,
         dc_percent=1,
-        dc_method=0,
+        dc_method=1,
         rho_method=0,
         delta_method=0,
         distance_method="euclidean",
@@ -30,11 +30,11 @@ class Dpc:
         """
         初始化相关成员，方法索引均从 0 开始
         Args:
-            path (_type_): 文件完整路径，除图片类型文件外，均为 csv 文件，数据均满足，最后一列为标签列，其余为数据列
-            save_path (str, optional): 保存结果的路径 Defaults to "../../results/".
+            path (_type_): 文件完整路径，除图片类型文件外，均为 csv 文件，数据均满足，最后一列为标签列，其余为数据列.
+            save_path (str, optional): 保存结果的路径. Defaults to "./result/".
             num (int, optional): 聚类类簇数. Defaults to 0.
-            dc_method (int, optional): 截断距离计算方法. Defaults to 0.
             dc_percent (int, optional): 截断距离百分比数. Defaults to 1.
+            dc_method (int, optional): 截断距离计算方法. Defaults to 1.
             rho_method (int, optional): 局部密度计算方法. Defaults to 0.
             delta_method (int, optional): 相对距离计算方法. Defaults to 0.
             distance_method (str, optional): 度量方式. Defaults to 'euclidean'.
@@ -50,22 +50,22 @@ class Dpc:
         self.data_name = os.path.splitext(os.path.split(self.path)[-1])[0]
         """聚类类簇数，最好指定，也可以从文件中读取得到(默认从最后一列中读取)"""
         self.num = num
-        """截断距离计算方法"""
-        self.dc_method = dc_method
         """截断距离百分比数"""
         self.dc_percent = dc_percent
+        """截断距离计算方法"""
+        self.dc_method = dc_method
         """局部密度计算方法"""
         self.rho_method = rho_method
         """相对距离计算方法"""
         self.delta_method = delta_method
         """距离度量方式"""
         self.distance_method = distance_method
+        """聚类中心"""
+        self.center = numpy.array(center)
         """是否计算光晕点"""
         self.use_halo = use_halo
 
         """其他参数"""
-        """聚类中心"""
-        self.center = numpy.array(center)
         """边界域中密度最大的点"""
         self.border_b = list()
         """数据集的所有样本点，不包括标签列"""
@@ -84,6 +84,8 @@ class Dpc:
         self.cluster_result = dict()
 
         """保存文件相关参数"""
+        """算法名称"""
+        self.algorithm_name = "dpc"
         """由于已经创建了以该文件名命名的文件夹，对于文件名只需要添加相关参数"""
         self.file_name = (
             "dcm_"
@@ -94,11 +96,10 @@ class Dpc:
             + str(self.rho_method)
             + "__dem_"
             + str(self.delta_method)
-            + "__ush_"
-            + str(int(self.use_halo))
         )
-        """算法名称"""
-        self.algorithm_name = "dpc"
+        """use_halo 几乎不用，只有用的时候才加上"""
+        if self.use_halo:
+            self.file_name += "__ush_" + str(int(self.use_halo))
 
     def cluster(self):
         """
@@ -106,10 +107,10 @@ class Dpc:
         """
         """获取数据集相对固定的成员信息：样本点，样本数"""
         self.init_points_msg()
-        """获取数据集其他相关的成员信息：距离矩阵，距离列表，最小距离，最大距离"""
-        dis_array, min_dis, max_dis = self.load_points_msg()
+        """获取数据集其他相关的成员信息：距离矩阵，距离列表，最大距离，最小距离"""
+        dis_array, max_dis, min_dis = self.load_points_msg()
         """计算截断距离"""
-        dc = self.get_dc(dis_array, min_dis, max_dis)
+        dc = self.get_dc(dis_array, max_dis, min_dis)
         """计算局部密度"""
         rho = self.get_rho(dc)
         """计算相对距离 delta"""
@@ -125,7 +126,7 @@ class Dpc:
             self.cluster_result["halo"] = halo
         """获取聚类结果"""
         self.gain_label_pred(cluster_results)
-        """聚类结果，指标写入到 csv json 文件中"""
+        """聚类结果，指标写入到 json 文件中"""
         self.save_result()
 
     def init_points_msg(self):
@@ -151,23 +152,27 @@ class Dpc:
 
     def load_points_msg(self):
         """
-        获取数据集相关信息，距离矩阵，欧式距离列表，最小距离，最大距离
-        """
-        """默认为欧式距离"""
-        return self.distance_standard(self.distance_method)
-
-    def distance_standard(self, distance_method):
-        """
-        距离矩阵
+        获取数据集相关信息，如距离矩阵，欧式距离列表，最大距离，最小距离
         Args:
-            distance_method (_type_): 度量方法
+        Returns:
+            dis_array (_type_): 样本间距离的矩阵
+            max_dis (_type_): 样本间最大距离
+            min_dis (_type_): 样本间最小距离
+        """
+        """默认为欧式距离，可以根据不同的度量方法调用不同的方法生成距离矩阵，最大距离，最小距离等信息，这里只给出经典 DPC 算法的实现"""
+        return self.distance_standard()
+
+    def distance_standard(self):
+        """
+        根据度量方法生成距离矩阵等信息
+        Args:
         Returns:
             dis_array (_type_): 样本间距离的矩阵
             max_dis (_type_): 样本间最大距离
             min_dis (_type_): 样本间最小距离
         """
         """维度为 self.samples_num * (self.samples_num - 1) / 2，默认为 euclidean"""
-        dis_array = sch.distance.pdist(self.samples, distance_method)
+        dis_array = sch.distance.pdist(self.samples, self.distance_method)
 
         """处理距离矩阵"""
         num = 0
@@ -176,7 +181,7 @@ class Dpc:
                 """赋值"""
                 self.dis_matrix.at[i, j] = dis_array[num]
                 """处理对角元素"""
-                self.dis_matrix.at[i, j] = self.dis_matrix.at[i, j]
+                self.dis_matrix.at[j, i] = self.dis_matrix.at[i, j]
                 num += 1
 
         """最大距离"""
@@ -186,13 +191,13 @@ class Dpc:
 
         return dis_array, max_dis, min_dis
 
-    def get_dc(self, dis_array, min_dis, max_dis):
+    def get_dc(self, dis_array, max_dis, min_dis):
         """
         根据不同的 self.dc_method 计算截断距离
         Args:
             dis_array (_type_): 样本间距离的矩阵
-            min_dis (_type_): 样本间最大距离
-            max_dis (_type_): 样本间最小距离
+            max_dis (_type_): 样本间最大距离
+            min_dis (_type_): 样本间最小距离
         Returns:
             dc (_type_): 截断距离
         """
@@ -217,7 +222,7 @@ class Dpc:
                 elif neighbors_percent < lower:
                     min_dis = dc
         elif self.dc_method == 1:
-            """实验中使用该方法为主"""
+            """实验中默认该方法"""
             dis_array_ = dis_array.copy()
             dis_array_.sort()
             """取第 self.dc_percent 个距离作为截断距离"""
@@ -230,7 +235,7 @@ class Dpc:
                 )
             ]
         elif self.dc_method == 2:
-            """如果对截断距离计算有所改进，可以直接重写该方法"""
+            """如果对截断距离计算有所改进，可以重写该方法"""
             pass
 
         return dc
@@ -247,7 +252,7 @@ class Dpc:
         rho = numpy.zeros(self.samples_num)
 
         if self.rho_method == 0:
-            """高斯核"""
+            """高斯核，实验中默认该方法"""
             for i in range(self.samples_num):
                 for j in range(self.samples_num):
                     if i != j:
@@ -266,6 +271,9 @@ class Dpc:
                 rho[i] = math.exp(
                     -(self.dis_matrix.loc[i].sort_values().values[:n].sum() / (n - 1))
                 )
+        elif self.rho_method == 3:
+            """如果对局部密度计算有所改进，可以重写该方法"""
+            pass
 
         return rho
 
@@ -282,7 +290,7 @@ class Dpc:
 
         """考虑局部密度 rho 是否存在多个最大值"""
         if self.delta_method == 0:
-            """考虑 rho 相同且同时为最大的情况(推荐)"""
+            """考虑 rho 相同且同时为最大的情况，实验中默认该方法"""
             """将局部密度从大到小排序，返回对应的索引值"""
             rho_order_idx = rho.argsort()[-1::-1]
             """即 rho_order_idx 存放的是第 i 大元素 rho 的索引，而不是对应的值"""
@@ -311,6 +319,9 @@ class Dpc:
                     """非局部密度最大的点，寻找局部密度大于 i 且离 i 最近的点的索引"""
                     min_dis_idx = self.dis_matrix.loc[i, j_list].idxmin()
                     delta[i] = self.dis_matrix.at[i, min_dis_idx]
+        elif self.delta_method == 2:
+            """如果对相对距离计算有所改进，可以直接重写该方法"""
+            pass
 
         return delta
 
@@ -353,6 +364,7 @@ class Dpc:
         Returns:
             (dict(center: str, points: list())): 聚类结果
         """
+        """默认为一步分配策略，可以根据不同的分配方法分配非距离中心样本点，这里只给出经典 DPC 算法的实现"""
         return self.assign(rho, center)
 
     def assign(self, rho, center):
@@ -409,9 +421,9 @@ class Dpc:
         """
         获取光晕点
         Args:
-            rho (_type_): _description_
-            cluster_result (_type_): _description_
-            dc (_type_): _description_
+            rho (_type_): 局部密度
+            cluster_result (_type_): 聚类结果
+            dc (_type_): 截断距离
         Returns:
             cluster_result (dict(center: str, points: list())): 聚类结果
             halo (list): 光晕点
@@ -457,7 +469,7 @@ class Dpc:
         """
         从 cluster_result 中获聚类标签
         Args:
-            cluster_result (_type_): _description_
+            cluster_result (_type_): 聚类结果
         """
         """预分配空间"""
         self.label_pred = [-1 for _ in range(self.samples_num)]
@@ -481,7 +493,7 @@ class Dpc:
             path (_type_): 文件路径
         """
         """创建以该数据集命名的文件夹"""
-        path = self.save_path + "result" + "/" + self.data_name + "/"
+        path = self.save_path + "result/" + self.data_name + "/"
         """判断文件夹是否存在"""
         if not os.path.isdir(path):
             """创建文件夹"""
