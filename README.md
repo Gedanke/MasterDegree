@@ -13,7 +13,7 @@
     * [compare.py](./codes/algorithm/compare.py) 对 sklearn 中的算法
     * [dpc.py](./codes/algorithm/dpc.py) dpc 基类算法
     * [dpcs.py](./codes/algorithm/dpcs.py) dpc 系列对比算法
-    * [dpcm.py](./codes/algorithm/dpcm.py) 本文改进的三个 dpc 算法
+    * [dpcm.py](./codes/algorithm/dpcm.py) 本文改进的三个 DPC 算法，以及将三个改进变为可选选项融入到 DPC 中
   * [__init__.py](./codes/__init__.py) 包文件
   * [process.py](./codes/process.py) 数据处理文件
   * [dataSetting.py](./codes/dataSetting.py) 一些公用的函数，不同算法在不同数据集上的设置参数

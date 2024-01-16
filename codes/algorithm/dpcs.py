@@ -117,7 +117,7 @@ class DpcD(Dpc):
         self.file_name = (
             "dcp_"
             + str(self.dc_percent)
-            + "__rho_"
+            + "__rhom_"
             + str(self.rho_method)
             + "__dem_"
             + str(self.delta_method)
@@ -225,7 +225,7 @@ class DpcD(Dpc):
             """rod"""
             dis = (d_a_b + d_b_a) / min(o_a_b, o_b_a)
         elif self.distance_method == "krod":
-            """改进 rod"""
+            """krod"""
             l_a_b = o_a_b + o_b_a
             """高斯核"""
             k_a_b = math.exp(-((euclidean_table.at[i, j] / self.params["mu"]) ** 2))
@@ -445,7 +445,7 @@ class SnnDpc:
         """
         """加载数据集"""
         self.init_points_msg()
-        """snn dpc"""
+        """SNN-DPC"""
         self.label_pred = self.snn_dpc()
         """转化为 numpy"""
         self.label_pred = self.label_pred.tolist()
@@ -471,7 +471,7 @@ class SnnDpc:
 
     def snn_dpc(self):
         """
-        snn dpc 算法，基于作者提供的代码，并未做太多修改
+        SNN-DPC 算法，基于作者提供的代码，并未做太多修改
         Returns:
             index_assignment (_type_): 聚类结果
         """

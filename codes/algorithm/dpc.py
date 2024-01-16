@@ -88,11 +88,11 @@ class Dpc:
         self.algorithm_name = "dpc"
         """由于已经创建了以该文件名命名的文件夹，对于文件名只需要添加相关参数"""
         self.file_name = (
-            "dcm_"
-            + str(self.dc_method)
-            + "__dcp_"
+            "dcp_"
             + str(self.dc_percent)
-            + "__rho_"
+            + "__dcm_"
+            + str(self.dc_method)
+            + "__rhom_"
             + str(self.rho_method)
             + "__dem_"
             + str(self.delta_method)
@@ -369,7 +369,7 @@ class Dpc:
 
     def assign(self, rho, center):
         """
-        dpc 算法的非聚类中心样本点分配
+        DPC 算法的非聚类中心样本点分配
         Args:
             rho (_type_): 局部密度
             center (_type_): 聚类中心样本点
