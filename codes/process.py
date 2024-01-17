@@ -9,7 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from scipy.io import loadmat
 from .dataSetting import *
 
-"""保留两位有效数字"""
+"""保留三位有效数字"""
 numpy.set_printoptions(precision=3)
 DATA_PATH = "./dataset/"
 
@@ -35,7 +35,7 @@ class DealData:
                 "num": int, 数据集样本个数,
                 "noise": float, 噪声级别,
                 "noise_type": 0/1, 高斯噪声/直接生成
-                # "mu": float, 双圈数据集的参数，半径比
+                "mu": float, 双圈数据集的参数，半径比
                 "factor": 双圈数据集的参数 factor
             }
             使用前传入正确的参数，类中不对参数进行校验
@@ -52,7 +52,6 @@ class DealData:
         数据归一化处理
         Args:
             data (_type_): 原始数据，不包含标签
-
         Returns:
             _type_: 归一化后的数据
         """
@@ -97,6 +96,7 @@ class DealData:
 
     def deal_demo(self):
         """
+        https://blog.csdn.net/chenxy_bwave/article/details/122078564
         这里的数据是不含噪声的
         处理 demo 的数据集，原始数据存同时放在 raw 的 demo 文件夹下，归一化后的数据存同时放在 data 的 demo 文件夹下
         """

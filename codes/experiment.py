@@ -12,24 +12,29 @@ from multiprocessing.pool import Pool
 conf = dict()
 
 
-def test_dataset(data_type):
+class RunDemo:
     """
-    统计数据集信息
-    Args:
-        data_type (_type_): _description_
+    在 demo 数据集上进行实验
+    使用一些度量方式，运行 demo 数据集(双月，双圈)，获得实验结果
     """
-    configure = {}
-    path = "./dataset/experiment/" + data_type + "/"
-    for data_dir in os.listdir(path):
-        configure[data_dir] = {}
-        p = path + data_dir + "/"
-        file = os.listdir(p)[0]
-        data = pandas.read_csv(p + file)
-        cols = data.columns
-        configure[data_dir]["path"] = p + file
-        configure[data_dir]["save_path"] = "./result/" + data_type + "/"
-        configure[data_dir]["samples_num"] = len(data)
-        configure[data_dir]["features_num"] = len(cols) - 1
-        configure[data_dir]["num"] = len(set(data[cols[-1]]))
 
-    print(configure)
+    def __init__(self) -> None:
+        pass
+
+
+class RunSynthesis:
+    """
+    在 synthesis 数据集上进行实验
+    """
+
+
+class RunUci:
+    """
+    在 uci 数据集上进行实验
+    """
+
+
+class RunImage:
+    """
+    在 image 数据集上进行实验
+    """
