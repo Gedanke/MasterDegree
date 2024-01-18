@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-# import sys
-# import os
+import sys
+import os
 
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # sys.path.append(BASE_DIR)
@@ -91,14 +91,14 @@ def generate_demo_data():
         "noise": 0.15,
         "type": "moons",
         "noise_type": 0,
-        "num": 4096,
+        "num": 128,
         "mu": 10,
         "factor": 0.3,
     }
     dd = DealData("demo", param)
     dd.deal_demo()
     dd.get_demo()
-    """moons 数据集"""
+    """circles 数据集"""
     param = {
         "norm": 0,
         "gmu": 1,
@@ -106,7 +106,7 @@ def generate_demo_data():
         "noise": 0.15,
         "type": "circles",
         "noise_type": 0,
-        "num": 4096,
+        "num": 128,
         "mu": 10,
         "factor": 0.3,
     }
@@ -117,10 +117,42 @@ def generate_demo_data():
         dd.get_demo()
 
 
+def test_run_demo():
+    """ """
+    params = {
+        "moons": {
+            "norm": 0,
+            "gmu": 1,
+            "sigma": 1,
+            "noise": 0.15,
+            "type": "moons",
+            "noise_type": 0,
+            "num": 128,
+            "mu": 10,
+            "factor": 0.3,
+        },
+        "circles": {
+            "norm": 0,
+            "gmu": 1,
+            "sigma": 1,
+            "noise": [float(i / 20) for i in range(6)],
+            "type": "circles",
+            "noise_type": 0,
+            "num": 128,
+            "mu": 10,
+            "factor": 0.3,
+        },
+    }
+    rd = RunDemo("./dataset/experiment/demo/", params)
+    rd.deal_circles()
+    # rd.deal_moons()
+
+
 if __name__ == "__main__":
     """"""
     # test_process()
     # test_compare()
     # test_dpc()
     # test_datasets()
-    generate_demo_data()
+    # generate_demo_data()
+    test_run_demo()

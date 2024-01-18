@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from codes import *
+from algorithm import *
+from .dataSetting import *
 
 
 def noramlized(data):
@@ -77,6 +78,36 @@ def test_dataset(data_type):
         configure[data_dir]["num"] = len(set(data[cols[-1]]))
 
     print(configure)
+
+
+import pandas
+from multiprocessing.pool import *
+
+
+# class A:
+#     """"""
+
+#     def __init__(self) -> None:
+#         """"""
+
+#     def m(self, id):
+#         """
+
+#         Args:
+#             id (_type_): _description_
+#         """
+#         print(id)
+#         pandas.DataFrame({"A": [1, 2, 3, 0, id]}).to_csv(str(id) + ".csv")
+
+#     def a(self):
+#         """ """
+#         p = Pool()
+#         p.apply_async(self.m, args=(1))
+#         p.apply_async(self.m, args=(2))
+#         p.apply_async(self.m, args=(3))
+#         p.apply_async(self.m, args=(4))
+#         p.close()
+#         p.join()
 
 
 if __name__ == "__main__":

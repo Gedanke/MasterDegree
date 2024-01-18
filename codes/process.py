@@ -5,7 +5,6 @@ import os
 import random
 import numpy
 import pandas
-from sklearn.preprocessing import StandardScaler
 from scipy.io import loadmat
 from .dataSetting import *
 
@@ -35,7 +34,7 @@ class DealData:
                 "num": int, 数据集样本个数,
                 "noise": float, 噪声级别,
                 "noise_type": 0/1, 高斯噪声/直接生成
-                "mu": float, 双圈数据集的参数，半径比
+                "mu": float, krod,ckrod 中的高斯核 mu
                 "factor": 双圈数据集的参数 factor
             }
             使用前传入正确的参数，类中不对参数进行校验
@@ -46,29 +45,6 @@ class DealData:
         self.params = params
         """文件名"""
         self.file_name = ""
-
-    def noramlized(self, data):
-        """
-        数据归一化处理
-        Args:
-            data (_type_): 原始数据，不包含标签
-        Returns:
-            _type_: 归一化后的数据
-        """
-        """归一化后的数据"""
-        new_data = data
-
-        if self.params["norm"] == 0:
-            """归一化"""
-            new_data = (data - data.min()) / (data.max() - data.min())
-        elif self.params["norm"] == 1:
-            """标准化"""
-            new_data = StandardScaler().fit_transform(data)
-        else:
-            """没有给就默认是归一化"""
-            new_data = (data - data.min()) / (data.max() - data.min())
-
-        return new_data
 
     def add_noise(self, data):
         """
@@ -126,7 +102,7 @@ class DealData:
         )
 
         """将结果归一化，列名规整后保存到 data 的 demo 文件夹下"""
-        data_data = pandas.DataFrame(self.noramlized(data)).round(3)
+        data_data = pandas.DataFrame(noramlized(self.params, data)).round(3)
         data_data.columns = list(range(int(data.shape[1])))
         data_data.join(pandas.DataFrame(label)).to_csv(
             DATA_PATH + "data/" + self.path + "/" + self.file_name + ".csv", index=False
@@ -148,7 +124,7 @@ class DealData:
                 """大于两列，默认最后一列是标签"""
                 label = {"label": normalized_label(list(raw_data[col_list[-1]]))}
                 data = (
-                    self.noramlized(raw_data[col_list[0:-1]])
+                    noramlized(self.params, raw_data[col_list[0:-1]])
                     .round(3)
                     .join(pandas.DataFrame(label))
                 )
@@ -156,7 +132,7 @@ class DealData:
                 data.columns = list(range(len(data.columns) - 1)) + ["label"]
             else:
                 """小于等于列，此处默认没有列标签"""
-                data = self.noramlized(raw_data).round(3)
+                data = noramlized(self.params, raw_data).round(3)
                 """修改列标签"""
                 data.columns = list(range(len(data.columns)))
 
@@ -192,8 +168,8 @@ class DealData:
             if file in file_list:
                 """读取 minmax_dataset.mat，都有 minmax_scaling 这个 key"""
                 mat_data = loadmat(dir_path + dataset + "/" + file)
-                raw_data = self.noramlized(
-                    pandas.DataFrame(mat_data["minmax_scaling"][:, 1:])
+                raw_data = noramlized(
+                    self.params, pandas.DataFrame(mat_data["minmax_scaling"][:, 1:])
                 )
                 label = normalized_label(list(mat_data["minmax_scaling"][:, 0]))
             else:
@@ -202,7 +178,7 @@ class DealData:
                 if file in file_list:
                     """处理 dataset.mat，key 不统一，分别判断下即可，目前而言 X 是数据，Y 是标签"""
                     mat_data = loadmat(dir_path + dataset + "/" + file)
-                    raw_data = self.noramlized(pandas.DataFrame(mat_data["X"]))
+                    raw_data = noramlized(self.params, pandas.DataFrame(mat_data["X"]))
                     label = normalized_label([_[0] for _ in mat_data["Y"].tolist()])
                 else:
                     """处理 dataset.data，现阶段不会进行到这一步，mat 格式文件是一定有的"""
@@ -290,7 +266,7 @@ class DealData:
                     )
 
                 """归一化数据并保存结果"""
-                data = pandas.DataFrame(self.noramlized(data).round(3))
+                data = pandas.DataFrame(noramlized(self.params, data).round(3))
                 """修改标签列名"""
                 data.columns = list(range(int(data.shape[1])))
                 label = pandas.DataFrame(label)
@@ -328,7 +304,7 @@ class DealData:
 
                 """归一化"""
                 noise_data = (
-                    self.noramlized(self.add_noise(data[col_list[0:-1]]))
+                    noramlized(self.params, self.add_noise(data[col_list[0:-1]]))
                     .round(3)
                     .join(data[col_list[-1]])
                 )
@@ -388,7 +364,7 @@ class DealData:
                 col_list = list(raw_data.columns)
                 """归一化"""
                 noise_data = (
-                    self.noramlized(self.add_noise(raw_data[col_list[0:-1]]))
+                    noramlized(self.params, self.add_noise(raw_data[col_list[0:-1]]))
                     .round(3)
                     .join(raw_data[col_list[-1]])
                 )
@@ -448,7 +424,7 @@ class DealData:
                 col_list = list(raw_data.columns)
                 """归一化"""
                 noise_data = (
-                    self.noramlized(self.add_noise(raw_data[col_list[0:-1]]))
+                    noramlized(self.params, self.add_noise(raw_data[col_list[0:-1]]))
                     .round(3)
                     .join(raw_data[col_list[-1]])
                 )
