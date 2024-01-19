@@ -163,14 +163,22 @@ def distance_rods(data_params, samples, distance_method):
     """对 euclidean_table 使用 argsort()，该函数会对矩阵的每一行从小到大排序，返回的是 euclidean_table 中索引"""
     rank_order_table = numpy.array(euclidean_table).argsort()
 
+    """优化下度量计算"""
+    """用新的度量方式得到的样本间距离覆盖掉 dis_array"""
+    dis_array = [
+        rods_fun(data_params, i, j, rank_order_table, euclidean_table, distance_method)
+        for i in range(samples_num)
+        for j in range(i + 1, samples_num)
+    ]
+
     """对距离矩阵进行处理"""
     num = 0
     for i in range(samples_num):
         for j in range(i + 1, samples_num):
-            """用新的度量方式得到的样本间距离覆盖掉 dis_array"""
-            dis_array[num] = rods_fun(
-                data_params, i, j, rank_order_table, euclidean_table, distance_method
-            )
+            # """用新的度量方式得到的样本间距离覆盖掉 dis_array"""
+            # dis_array[num] = rods_fun(
+            #     data_params, i, j, rank_order_table, euclidean_table, distance_method
+            # )
             """dis_matrix 内存放样本间的距离"""
             dis_matrix.at[i, j] = dis_array[num]
             """处理对角元素"""
@@ -243,19 +251,20 @@ def rods_fun(data_params, i, j, rank_order_table, euclidean_table, distance_meth
     return dis
 
 
-def multi_deal_demo(data_params, samples, dis_name, save_path):
+def multi_deal_demo(data_params, samples, labels, dis_name, save_path):
     """
     多进程处理 moons 数据集
     Args:
         data_params (_type_): 数据集参数
         samples (_type_): 数据集矩阵
-        dis_name (_type_): _description_
-        save_path (_type_): _description_
+        labels (_type_): 数据集标签
+        dis_name (_type_): 度量方法
+        save_path (_type_): 保存结果路径
     """
     """保存数据"""
     save_data = None
     """MDS 映射"""
-    mds = MDS(dissimilarity="precomputed", random_state=0, normalized_stress="auto")
+    mds = MDS(dissimilarity="precomputed", random_state=0)
 
     """不同距离"""
     if dis_name == "euc":
@@ -267,14 +276,25 @@ def multi_deal_demo(data_params, samples, dis_name, save_path):
     elif dis_name == "gau":
         """高斯核"""
         save_data = mds.fit_transform(distance_gas(data_params, samples))
-    elif dis_name in {"rod", "krod", "ckrod"}:
+    else:
         "rod，krod，ckrod"
         save_data = mds.fit_transform(distance_rods(data_params, samples, dis_name))
 
-    """归一化"""
-    save_data = noramlized(save_data)
-    """统一保存为 csv 文件"""
-    pandas.DataFrame(save_data).to_csv(
+    """归一化，保留三位有效数字"""
+    save_data = pandas.DataFrame(noramlized(data_params, save_data)).round(3)
+    """合并标签，统一保存为 csv 文件"""
+    save_data.join(labels).to_csv(
         save_path,
         index=False,
     )
+
+
+def run_ac(path, save_path="../../result/", num=0, params={}):
+    """
+    多进程运行 AC 算法
+    Args:
+        path (_type_): 数据集文件路径
+        save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
+        num (int, optional): 类簇数量. Defaults to 0.
+        params (dict, optional): 算法需要的参数. Defaults to {}.
+    """

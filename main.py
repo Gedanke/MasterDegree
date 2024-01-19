@@ -21,7 +21,7 @@ def test_process():
         "noise": 0.1,
         "type": "moons",
         "noise_type": 0,
-        "num": 4096,
+        "num": 128,
         "mu": 4,
         "factor": 0.5,
     }
@@ -91,7 +91,7 @@ def generate_demo_data():
         "noise": 0.15,
         "type": "moons",
         "noise_type": 0,
-        "num": 128,
+        "num": 1024,
         "mu": 10,
         "factor": 0.3,
     }
@@ -106,7 +106,7 @@ def generate_demo_data():
         "noise": 0.15,
         "type": "circles",
         "noise_type": 0,
-        "num": 128,
+        "num": 1024,
         "mu": 10,
         "factor": 0.3,
     }
@@ -127,8 +127,9 @@ def test_run_demo():
             "noise": 0.15,
             "type": "moons",
             "noise_type": 0,
-            "num": 128,
-            "mu": 10,
+            "num": 1024,
+            "kmu": 5,
+            "ckmu": 20,
             "factor": 0.3,
         },
         "circles": {
@@ -138,14 +139,27 @@ def test_run_demo():
             "noise": [float(i / 20) for i in range(6)],
             "type": "circles",
             "noise_type": 0,
-            "num": 128,
-            "mu": 10,
+            "num": 1024,
+            "kmu": 5,
+            "ckmu": 20,
             "factor": 0.3,
         },
     }
     rd = RunDemo("./dataset/experiment/demo/", params)
+    rd.deal_moons()
     rd.deal_circles()
-    # rd.deal_moons()
+
+
+def fun(i):
+    print("Fun: " + str(i))
+
+
+class A:
+    def __init__(self, i) -> None:
+        self.i = i
+
+    def cluster(self):
+        print("A: " + str(self.i))
 
 
 if __name__ == "__main__":
@@ -154,5 +168,24 @@ if __name__ == "__main__":
     # test_compare()
     # test_dpc()
     # test_datasets()
-    # generate_demo_data()
-    test_run_demo()
+    generate_demo_data()
+    # test_run_demo()
+    # print("sss")
+    # s_num=10
+    # dis_m=[
+    #     0 for _ in range(int(s_num*(s_num-1)/2))
+    # ]
+    # dis_mm=[
+    #     0 for _ in range(int(s_num*(s_num-1)/2))
+    # ]
+    # num=0
+    # for i in range(s_num):
+    #     for j in range(i+1,s_num):
+    #         dis_m[num]=i+j
+    #         num+=1
+
+    # dis_mm=[
+    #     i+j for i in range(s_num) for j in range(i+1,s_num)
+    # ]
+    # print(dis_m)
+    # print(dis_mm)

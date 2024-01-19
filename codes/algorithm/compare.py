@@ -179,7 +179,7 @@ class ComAP(ComBase):
     """
     AffinityPropagation 算法的封装
     Args:
-            ComBase (_type_): 基类
+        ComBase (_type_): 基类
     """
 
     def __init__(self, path, save_path="../../result/", num=0, params={}) -> None:

@@ -7,8 +7,8 @@ from multiprocessing import Pool
 
 conf = dict()
 """Demo 中使用到的度量方法，这里用简写"""
-# MOONS_DIS_METHOD = ["euc", "man", "gau", "rod", "krod", "ckrod"]
-MOONS_DIS_METHOD = ["euc", "man", "gau"]
+MOONS_DIS_METHOD = ["euc", "man", "gau", "rod", "krod", "ckrod"]
+# MOONS_DIS_METHOD = ["rod"]
 
 """
 运行算法
@@ -85,7 +85,7 @@ class RunDemo:
         self.samples = pandas.read_csv(file_name)
         col = list(self.samples.columns)
         """self.samples，最后一列为标签列"""
-        self.label_true = self.samples[col[-1]].tolist()
+        self.label_true = self.samples[col[-1]]
         """self.samples 其余列为数据列，不包括标签列"""
         self.samples = numpy.array(self.samples.loc[:, col[0:-1]])
 
@@ -117,6 +117,7 @@ class RunDemo:
                 args=(
                     self.data_params,
                     self.samples,
+                    self.label_true,
                     dis_name,
                     file_path + dis_name + ".csv",
                 ),
@@ -131,7 +132,7 @@ class RunDemo:
         """
         """创建以该数据集命名的文件夹"""
         if not os.path.isdir(self.save_path + "result/circles/"):
-            os.mkdir(self.save_path + "result/circle/")
+            os.mkdir(self.save_path + "result/circles/")
 
         """加载 moons 数据集"""
         self.data_params = self.params["circles"]
@@ -159,6 +160,7 @@ class RunDemo:
                     args=(
                         self.data_params,
                         self.samples,
+                        self.label_true,
                         dis_name,
                         file_path + dis_name + ".csv",
                     ),
