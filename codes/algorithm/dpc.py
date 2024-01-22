@@ -26,6 +26,7 @@ class Dpc:
         distance_method="euclidean",
         center=[],
         use_halo=False,
+        params={},
     ) -> None:
         """
         初始化相关成员，方法索引均从 0 开始
@@ -40,6 +41,7 @@ class Dpc:
             distance_method (str, optional): 度量方式. Defaults to 'euclidean'.
             center (list, optional): 聚类中心，可以人为指定，但为了统一起见，不建议这样做. Defaults to [].
             use_halo (bool, optional): 是否计算光晕点. Defaults to False.
+            params (dict, optional): 改进算法需要的其他参数. Defaults to {}.
         """
         """构造函数中的相关参数"""
         """文件完整路径"""
@@ -64,6 +66,8 @@ class Dpc:
         self.center = numpy.array(center)
         """是否计算光晕点"""
         self.use_halo = use_halo
+        """算法需要的其他参数"""
+        self.params = params
 
         """其他参数"""
         """边界域中密度最大的点"""
@@ -100,6 +104,9 @@ class Dpc:
         """use_halo 几乎不用，只有用的时候才加上"""
         if self.use_halo:
             self.file_name += "__ush_" + str(int(self.use_halo))
+
+        """聚类函数"""
+        self.cluster()
 
     def cluster(self):
         """

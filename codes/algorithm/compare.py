@@ -43,6 +43,7 @@ class ComBase:
         self.data_name = os.path.splitext(os.path.split(self.path)[-1])[0]
         """聚类算法需要的参数"""
         self.params = params
+
         """其他参数"""
         """算法的名称，同时也是保存最终结果的文件名称"""
         self.algorithm_name = self.data_name
@@ -56,6 +57,9 @@ class ComBase:
         self.cluster_result = {"label": list()}
         """获取数据集部分信息"""
         self.init_points_msg()
+
+        """聚类函数"""
+        self.cluster()
 
     def init_points_msg(self):
         """
@@ -144,7 +148,7 @@ class ComAC(ComBase):
         """确定文件名"""
         self.algorithm_name = "ac"
         """AgglomerativeClustering 聚类算法"""
-        if "linkage" in self.params.keys() and "affinity" in self.params.keys():
+        if "affinity" in self.params.keys() and "linkage" in self.params.keys():
             algorithm = AgglomerativeClustering(
                 n_clusters=self.num,
                 affinity=self.params["affinity"],
@@ -169,6 +173,9 @@ class ComAC(ComBase):
         else:
             algorithm = AgglomerativeClustering(n_clusters=self.num)
 
+        """保留 affinity 与 linkage"""
+        self.cluster_result["affinity"] = algorithm.affinity
+        self.cluster_result["linkage"] = algorithm.linkage
         """预测标签"""
         self.label_pred = algorithm.fit_predict(self.samples)
         """保存聚类结果"""
@@ -200,12 +207,14 @@ class ComAP(ComBase):
         """确定文件名"""
         self.algorithm_name = "ap"
         """AP 聚类"""
-        if "pre" in self.params.keys():
-            algorithm = AffinityPropagation(preference=self.params["pre"])
-            self.algorithm_name += "__pre_" + str(self.params["pre"])
+        if "damping" in self.params.keys():
+            algorithm = AffinityPropagation(preference=self.params["damping"])
+            self.algorithm_name += "__damping_" + str(self.params["damping"])
         else:
             algorithm = AffinityPropagation()
 
+        """保留 damping"""
+        self.cluster_result["damping"] = algorithm.damping
         """预测标签"""
         self.label_pred = algorithm.fit_predict(self.samples)
         """加入聚类中心坐标索引"""
@@ -251,6 +260,8 @@ class ComBirch(ComBase):
         else:
             algorithm = Birch(n_clusters=self.num)
 
+        """保留 threshold"""
+        self.cluster_result["threshold"] = algorithm.threshold
         """预测标签"""
         self.label_pred = algorithm.fit_predict(self.samples)
         """保存聚类结果"""
@@ -297,6 +308,9 @@ class ComDBSCAN(ComBase):
         else:
             algorithm = DBSCAN()
 
+        """保留 eps 与 min_samples"""
+        self.cluster_result["eps"] = algorithm.eps
+        self.cluster_result["min_samples"] = algorithm.min_samples
         """预测标签"""
         self.label_pred = algorithm.fit_predict(self.samples)
         """预测的聚类结果超过一类，才有价值"""
@@ -382,6 +396,8 @@ class ComMeanShit(ComBase):
         else:
             algorithm = MeanShift()
 
+        """保留 bandwidth"""
+        self.cluster_result["bandwidth"] = algorithm.bandwidth
         """预测标签"""
         self.label_pred = algorithm.fit_predict(self.samples)
         """加入聚类中心坐标"""
@@ -432,6 +448,9 @@ class ComOPTICS(ComBase):
         else:
             algorithm = OPTICS()
 
+        """保留 eps 与 min_samples"""
+        self.cluster_result["eps"] = algorithm.eps
+        self.cluster_result["min_samples"] = algorithm.min_samples
         """预测标签"""
         self.label_pred = algorithm.fit_predict(self.samples)
         """预测的聚类结果超过一类，才有价值"""
@@ -475,6 +494,8 @@ class ComSC(ComBase):
         else:
             algorithm = SpectralClustering(n_clusters=self.num)
 
+        """保留 gamma"""
+        self.cluster_result["gamma"] = algorithm.gamma
         """预测标签"""
         self.label_pred = algorithm.fit_predict(self.samples)
         """保存聚类结果"""

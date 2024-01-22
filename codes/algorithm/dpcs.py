@@ -97,9 +97,8 @@ class DpcD(Dpc):
             distance_method,
             center,
             use_halo,
+            params,
         )
-        """算法需要的其他参数"""
-        self.params = params
 
     def load_points_msg(self):
         """
@@ -282,9 +281,8 @@ class DpcKnn(Dpc):
             distance_method,
             center,
             use_halo,
+            params,
         )
-        """算法需要的其他参数"""
-        self.params = params
 
     def load_points_msg(self):
         """
@@ -389,9 +387,8 @@ class DpcFKnn(Dpc):
             distance_method,
             center,
             use_halo,
+            params,
         )
-        """算法需要的其他参数"""
-        self.params = params
 
 
 class SnnDpc:
@@ -438,6 +435,9 @@ class SnnDpc:
         self.algorithm_name = "snn_dpc"
         """文件名"""
         self.file_name = "snn_dpc__k_" + str(self.k)
+
+        """聚类函数"""
+        self.cluster()
 
     def cluster(self):
         """

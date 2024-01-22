@@ -175,10 +175,6 @@ def distance_rods(data_params, samples, distance_method):
     num = 0
     for i in range(samples_num):
         for j in range(i + 1, samples_num):
-            # """用新的度量方式得到的样本间距离覆盖掉 dis_array"""
-            # dis_array[num] = rods_fun(
-            #     data_params, i, j, rank_order_table, euclidean_table, distance_method
-            # )
             """dis_matrix 内存放样本间的距离"""
             dis_matrix.at[i, j] = dis_array[num]
             """处理对角元素"""
@@ -289,12 +285,60 @@ def multi_deal_demo(data_params, samples, labels, dis_name, save_path):
     )
 
 
-def run_ac(path, save_path="../../result/", num=0, params={}):
-    """
-    多进程运行 AC 算法
-    Args:
-        path (_type_): 数据集文件路径
-        save_path (str, optional): 保存算法结果的路径. Defaults to "../../result/".
-        num (int, optional): 类簇数量. Defaults to 0.
-        params (dict, optional): 算法需要的参数. Defaults to {}.
-    """
+"""
+不同算法预设参数
+AC: 使用默认参数
+AP: 使用默认参数
+Brich: threshold 从 0.1 到 1，步长为 1
+Dbscan：eps 从 0.1 到 1，步长为 1，min_samples 从 0.1 到 1，步长为 1
+KMeans: 使用默认参数
+MeanShit：使用默认参数
+Optics：eps 从 0.1 到 1，步长为 1，min_samples 从 0.1 到 1，步长为 1
+Sc：gamma 从 0.05 到 5.0，步长为 0.5
+Dpc：percent 从 0.1 到 4.0，步长为 0.1
+DpcD(参数可选)：percent 从 0.1 到 4.0，步长为 0.1，mu 从 1 开始，10 到 100，步长为 10
+DpcKnn：percent 从 0.1 到 4.0，步长为 0.1
+SnnDpc：k 从 3 到 50，步长为 1
+DpcCkrod：mu 从 1 开始，10 到 100，步长为 10
+DpcIRho：k 从 3 到 50，步长为 1，mu 从 1 开始，10 到 100，步长为 10
+DpcIAss：k 从 3 到 50，步长为 1，mu 从 1 开始，10 到 100，步长为 10
+DpcM(参数可选)：percent 从 0.1 到 4.0，步长为 0.1，k 从 3 到 50，步长为 1，mu 从 1 开始，10 到 100，步长为 10
+"""
+
+ALGORITHM_PARAMS = {
+    "AC": {},
+    "AP": {},
+    "Brich": {"threshold": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]},
+    "Dbscan": {
+        "eps": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        "min_samples": [1 + i for i in range(10)],
+    },
+    "Kmeans": {},
+    "MeanShit": {},
+    "Optics": {
+        "eps": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        "min_samples": [1 + i for i in range(10)],
+    },
+    "Sc": {"gamma": [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]},
+    "Dpc": {"percent": [float(i / 10) for i in range(1, 41)]},
+    "DpcD": {
+        "percent": [float(i / 10) for i in range(1, 41)],
+        "mu": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+    },
+    "DpcKnn": {"percent": [float(i / 10) for i in range(1, 41)]},
+    "SnnDpc": {"k": [i for i in range(3, 51)]},
+    "DpcCkrod": {"mu": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]},
+    "DpcIRho": {
+        "k": [i for i in range(3, 51)],
+        "mu": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+    },
+    "DpcIAss": {
+        "k": [i for i in range(3, 51)],
+        "mu": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+    },
+    "DpcM": {
+        "percent": [float(i / 10) for i in range(1, 41)],
+        "k": [i for i in range(3, 51)],
+        "mu": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+    },
+}

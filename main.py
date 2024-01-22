@@ -168,7 +168,7 @@ if __name__ == "__main__":
     # test_compare()
     # test_dpc()
     # test_datasets()
-    generate_demo_data()
+    # generate_demo_data()
     # test_run_demo()
     # print("sss")
     # s_num=10

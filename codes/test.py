@@ -109,7 +109,24 @@ from multiprocessing.pool import *
 #         p.close()
 #         p.join()
 
+# s_num=10
+# dis_m=[
+#     0 for _ in range(int(s_num*(s_num-1)/2))
+# ]
+# dis_mm=[
+#     0 for _ in range(int(s_num*(s_num-1)/2))
+# ]
+# num=0
+# for i in range(s_num):
+#     for j in range(i+1,s_num):
+#         dis_m[num]=i+j
+#         num+=1
 
+# dis_mm=[
+#     i+j for i in range(s_num) for j in range(i+1,s_num)
+# ]
+# print(dis_m)
+# print(dis_mm)
 if __name__ == "__main__":
     """"""
     # deal_other_uci()

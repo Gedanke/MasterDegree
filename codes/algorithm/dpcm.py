@@ -58,9 +58,8 @@ class DpcCkrod(Dpc):
             distance_method,
             center,
             use_halo,
+            params,
         )
-        """算法需要的其他参数"""
-        self.params = params
 
     def load_points_msg(self):
         """
@@ -458,7 +457,6 @@ class DpcM(Dpc):
         dc_method=1,
         rho_method=0,
         delta_method=0,
-        assign_method=0,
         distance_method="euclidean",
         center=...,
         use_halo=False,
@@ -474,11 +472,10 @@ class DpcM(Dpc):
             dc_method (int, optional): 截断距离计算方法. Defaults to 1.
             rho_method (int, optional): 局部密度计算方法. Defaults to 0.
             delta_method (int, optional): 相对距离计算方法. Defaults to 0.
-            assign_method (int, optional): 样本分配策略. Defaults to 0.
             distance_method (str, optional): 度量方式. Defaults to 'ckrod'.
             center (list, optional): 聚类中心，可以人为指定，但为了统一起见，不建议这样做. Defaults to [].
             use_halo (bool, optional): 是否计算光晕点. Defaults to False.
-            params (dict, optional): 改进算法需要的其他参数. Defaults to {}.
+            params (dict, optional): 改进算法需要的其他参数，将之前的 assign_method 加入到 params 中. Defaults to {}.
         """
         super().__init__(
             path,
@@ -491,10 +488,8 @@ class DpcM(Dpc):
             distance_method,
             center,
             use_halo,
+            params,
         )
-        """算法需要的其他参数"""
-        self.assign_method = assign_method
-        self.params = params
 
     def load_points_msg(self):
         """
@@ -555,12 +550,17 @@ class DpcM(Dpc):
         self.file_name += "__dem_" + str(self.delta_method)
 
         """加上分配策略"""
-        if self.assign_method == 0:
-            """一步分配策略"""
+        if "assign_method" in self.params.keys():
+            if self.params["assign_method"] == 0:
+                """一步分配策略"""
+                self.algorithm_name += "_ass"
+            elif self.params["assign_method"] == 1:
+                """两步分配策略"""
+                self.algorithm_name += "_iass"
+        else:
+            """默认使用一步分配策略"""
+            self.params["assign_method"] == 0
             self.algorithm_name += "_ass"
-        elif self.assign_method == 1:
-            """两步分配策略"""
-            self.algorithm_name += "_iass"
 
         """use_halo 几乎不用，只有用的时候才加上"""
         if self.use_halo:
@@ -737,10 +737,10 @@ class DpcM(Dpc):
             cluster_result (dict(center: str, points: list())): 聚类结果
         """
         """判断样本分配策略"""
-        if self.assign_method == 0:
+        if self.params["assign_method"] == 0:
             """使用一步分配法则分配标签"""
             return self.assign(rho, center)
-        elif self.assign_method == 1:
+        elif self.params["assign_method"] == 1:
             """使用一步分配法则预分配标签"""
             tmp_result = self.assign(rho, center)
             """预分配的标签，存放在 self.label_pred"""
