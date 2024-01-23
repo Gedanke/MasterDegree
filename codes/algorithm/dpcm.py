@@ -73,16 +73,16 @@ class DpcCkrod(Dpc):
         """算法名称"""
         self.algorithm_name = "dpc_ckrod"
         """由于已经创建了以该文件名命名的文件夹，对于文件名只需要添加相关参数"""
-        """删去 self.dc_percent，因为在这个类里面，局部密度计算方法不需要该参数"""
-        """删去 self.dc_method，因为在这个类里面，无需截断距离"""
         """度量方法默认为 ckrod"""
         self.file_name = (
-            "rhom_"
+            "dcp_"
+            + str(self.dc_percent)
+            + "__dcm_"
+            + str(self.dc_method)
+            + "__rhom_"
             + str(self.rho_method)
             + "__dem_"
             + str(self.delta_method)
-            + "__k_"
-            + str(self.params["k"])
             + "__mu_"
             + str(self.params["mu"])
         )
@@ -118,12 +118,18 @@ class DpcCkrod(Dpc):
         """对 euclidean_table 使用 argsort()，该函数会对矩阵的每一行从小到大排序，返回的是 euclidean_table 中索引"""
         rank_order_table = numpy.array(euclidean_table).argsort()
 
+        """优化下度量计算"""
+        """用新的度量方式得到的样本间距离覆盖掉 dis_array"""
+        dis_array = [
+            self.ckrod_fun(i, j, rank_order_table, euclidean_table)
+            for i in range(self.samples_num)
+            for j in range(i + 1, self.samples_num)
+        ]
+
         """对距离矩阵进行处理"""
         num = 0
         for i in range(self.samples_num):
             for j in range(i + 1, self.samples_num):
-                """用新的度量方式得到的样本间距离覆盖掉 dis_array"""
-                dis_array[num] = self.ckrod_fun(i, j, rank_order_table, euclidean_table)
                 """self.dis_matrix 内存放样本间的距离"""
                 self.dis_matrix.at[i, j] = dis_array[num]
                 """处理对角元素"""
@@ -592,12 +598,18 @@ class DpcM(Dpc):
         """对 euclidean_table 使用 argsort()，该函数会对矩阵的每一行从小到大排序，返回的是 euclidean_table 中索引"""
         rank_order_table = numpy.array(euclidean_table).argsort()
 
+        """优化下度量计算"""
+        """用新的度量方式得到的样本间距离覆盖掉 dis_array"""
+        dis_array = [
+            self.rods_fun(i, j, rank_order_table, euclidean_table)
+            for i in range(self.samples_num)
+            for j in range(i + 1, self.samples_num)
+        ]
+
         """对距离矩阵进行处理"""
         num = 0
         for i in range(self.samples_num):
             for j in range(i + 1, self.samples_num):
-                """用新的度量方式得到的样本间距离覆盖掉 dis_array"""
-                dis_array[num] = self.rods_fun(i, j, rank_order_table, euclidean_table)
                 """self.dis_matrix 内存放样本间的距离"""
                 self.dis_matrix.at[i, j] = dis_array[num]
                 """处理对角元素"""

@@ -9,7 +9,7 @@ from sklearn.metrics.cluster import *
 数据集的基本信息
 """
 """合成数据集"""
-synthesis_data = {
+SYNTHESIS_PARAMS = {
     "aggregation": {
         "path": "./dataset/experiment/synthesis/aggregation/aggregation.csv",
         "save_path": "./result/synthesis/",
@@ -75,7 +75,7 @@ synthesis_data = {
     },
 }
 """uci 数据集"""
-uci_data = {
+UCI_PATAMS = {
     "abalone": {
         "path": "./dataset/experiment/uci/abalone/abalone.csv",
         "save_path": "./result/uci/",
@@ -266,7 +266,8 @@ uci_data = {
         "num": 3,
     },
 }
-
+"""图片数据集"""
+IMAGE_PARAMS = {}
 """
 一些公用的函数
 """

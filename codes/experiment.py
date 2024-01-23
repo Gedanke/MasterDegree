@@ -13,6 +13,23 @@ MOONS_DIS_METHOD = ["euc", "man", "gau", "rod", "krod", "ckrod"]
 """
 运行算法
 """
+ALGORITHM_LIST = [
+    "AC",
+    "AP",
+    "Birch",
+    "Dbscan",
+    "Kmeans",
+    "MeanShit",
+    "Optics",
+    "Sc",
+    "Dpc",
+    "DpcD",
+    "DpcKnn",
+    "SnnDpc",
+    "DpcCkrod",
+    "DpcIRho",
+    "DpcIAss",
+]
 
 
 class RunDemo:
@@ -21,11 +38,11 @@ class RunDemo:
     使用一些度量方式，运行 demo 数据集(双月，双圈)，获得实验结果
     """
 
-    def __init__(self, path, params={}) -> None:
+    def __init__(self, path="./dataset/experiment/demo/", params={}) -> None:
         """
         初始化相关成员
         Args:
-            path (_type_): 文件路径，由于调用该类的主程序路径待定，这里使用手动传入，同时根据该路径解析出保存路径
+            path (str, optional): 文件路径，由于调用该类的主程序路径待定，这里使用手动传入，同时根据该路径解析出保存路径. Defaults to "./dataset/experiment/demo/".
             params (_type_, optional): 构造处理数据集需要的参数，这里不构造数据集，但参数中的规模要与 experiment 中的一致
             {
                 "moons"/"circles...":
@@ -170,19 +187,270 @@ class RunDemo:
         p.join()
 
 
+def run_data_algorithm(pool, dataset_params, algorithm_list, distance_method):
+    """
+    在 dataset 上运行 algorithm
+    Args:
+        pool (_type_): 进程池
+        dataset_params (_type_): 指定数据集
+        algorithm_list (_type_): 指定算法
+        algorithm_list (_type_): 度量方法
+    """
+    """数据集相关的基本信息"""
+    path = dataset_params["path"]
+    save_path = dataset_params["save_path"]
+    num = dataset_params["num"]
+
+    if "AC" in algorithm_list:
+        pool.apply_async(
+            ComAC,
+            args=(
+                path,
+                save_path,
+                num,
+                ALGORITHM_LIST["AC"],
+            ),
+        )
+    if "AP" in algorithm_list:
+        pool.apply_async(
+            ComAP,
+            args=(
+                path,
+                save_path,
+                num,
+                ALGORITHM_LIST["AP"],
+            ),
+        )
+    if "Birch" in algorithm_list:
+        for _threshold in ALGORITHM_PARAMS["Birch"]["threshold"]:
+            pool.apply_async(
+                ComBirch,
+                args=(
+                    path,
+                    save_path,
+                    num,
+                    {"threshold": _threshold},
+                ),
+            )
+    if "Dbscan" in algorithm_list:
+        for _eps in ALGORITHM_PARAMS["Dbscan"]["eps"]:
+            for _min_samples in ALGORITHM_PARAMS["Dbscan"]["min_samples"]:
+                pool.apply_async(
+                    ComDBSCAN,
+                    args=(
+                        path,
+                        save_path,
+                        num,
+                        {"eps": _eps, "min_samples": _min_samples},
+                    ),
+                )
+    if "Kmeans" in algorithm_list:
+        pool.apply_async(
+            ComKMeans,
+            args=(
+                path,
+                save_path,
+                num,
+                ALGORITHM_LIST["Kmeans"],
+            ),
+        )
+    if "MeanShit" in algorithm_list:
+        pool.apply_async(
+            ComMeanShit,
+            args=(
+                path,
+                save_path,
+                num,
+                ALGORITHM_LIST["MeanShit"],
+            ),
+        )
+    if "Optics" in algorithm_list:
+        for _eps in ALGORITHM_PARAMS["Optics"]["eps"]:
+            for _min_samples in ALGORITHM_PARAMS["Optics"]["min_samples"]:
+                pool.apply_async(
+                    ComOPTICS,
+                    args=(
+                        path,
+                        save_path,
+                        num,
+                        {"eps": _eps, "min_samples": _min_samples},
+                    ),
+                )
+    if "Sc" in algorithm_list:
+        for _gamma in ALGORITHM_PARAMS["Sc"]["gamma"]:
+            pool.apply_async(
+                ComSC,
+                args=(
+                    path,
+                    save_path,
+                    num,
+                    {"gamma": _gamma},
+                ),
+            )
+    if "Dpc" in algorithm_list:
+        for _percent in ALGORITHM_PARAMS["Dpc"]["percent"]:
+            pool.apply_async(
+                Dpc,
+                args=(
+                    path,
+                    save_path,
+                    num,
+                    _percent,
+                ),
+            )
+    if "DpcD" in algorithm_list:
+        if distance_method == "krod":
+            """krod"""
+            for _percent in ALGORITHM_PARAMS["DpcD"]["percent"]:
+                for _mu in ALGORITHM_PARAMS["DpcD"]["mu"]:
+                    pool.apply_async(
+                        DpcD,
+                        args=(
+                            path,
+                            save_path,
+                            num,
+                            _percent,
+                            1,
+                            0,
+                            0,
+                            distance_method,
+                            [],
+                            False,
+                            {"mu": _mu},
+                        ),
+                    )
+        else:
+            """这里使用 rod，其他距离也是沿用该方法"""
+            for _percent in ALGORITHM_PARAMS["DpcD"]["percent"]:
+                pool.apply_async(
+                    DpcD,
+                    args=(path, save_path, num, _percent, 1, 0, 0, distance_method),
+                )
+    if "DpcKnn" in algorithm_list:
+        for _percent in ALGORITHM_PARAMS["DpcKnn"]["percent"]:
+            pool.apply_async(
+                DpcKnn,
+                args=(
+                    path,
+                    save_path,
+                    num,
+                    _percent,
+                ),
+            )
+    if "SnnDpc" in algorithm_list:
+        for _k in ALGORITHM_PARAMS["SnnDpc"]["k"]:
+            pool.apply_async(
+                SnnDpc,
+                args=(
+                    path,
+                    save_path,
+                    num,
+                    _k,
+                ),
+            )
+    if "DpcCkrod" in algorithm_list:
+        for _percent in ALGORITHM_PARAMS["DpcCkrod"]["percent"]:
+            for _mu in ALGORITHM_PARAMS["DpcCkrod"]["mu"]:
+                pool.apply_async(
+                    DpcCkrod,
+                    args=(
+                        path,
+                        save_path,
+                        num,
+                        _percent,
+                        1,
+                        0,
+                        0,
+                        "ckrod",
+                        [],
+                        False,
+                        {"mu": _mu},
+                    ),
+                )
+    if "DpcIRho" in algorithm_list:
+        for _k in ALGORITHM_PARAMS["DpcIRho"]["k"]:
+            for _mu in ALGORITHM_PARAMS["DpcIRho"]["mu"]:
+                pool.apply_async(
+                    DpcIRho,
+                    args=(
+                        path,
+                        save_path,
+                        num,
+                        1,
+                        1,
+                        0,
+                        0,
+                        "ckrod",
+                        [],
+                        False,
+                        {"k": _k, "mu": _mu},
+                    ),
+                )
+    if "DpcIAss" in algorithm_list:
+        for _k in ALGORITHM_PARAMS["DpcIAss"]["k"]:
+            for _mu in ALGORITHM_PARAMS["DpcIAss"]["mu"]:
+                pool.apply_async(
+                    DpcIAss,
+                    args=(
+                        path,
+                        save_path,
+                        num,
+                        1,
+                        1,
+                        0,
+                        0,
+                        "ckrod",
+                        [],
+                        False,
+                        {"k": _k, "mu": _mu},
+                    ),
+                )
+
+
 class RunSynthesis:
     """
-    在 synthesis 数据集上进行实验
+    将 ALGORITHM_PARAMS 与 SYNTHESIS_PARAMS 合并，运行 synthesis 数据集
     """
 
+    def __init__(
+        self, path="./dataset/experiment/synthesis/", dataset_list=[], algorithm_list=[]
+    ) -> None:
+        """
+        初始化相关成员
+        Args:
+            path (str, optional): 文件路径，由于调用该类的主程序路径待定，这里使用手动传入，同时根据该路径解析出保存路径. Defaults to "./dataset/experiment/synthesis/".
+            dataset_list (list, optional): 使用的数据集列表. Defaults to [].
+            algorithm_list (list, optional): 使用的算法列表. Defaults to [].
+        """
+        """文件路径"""
+        self.path = path
+        """保存结果路径"""
+        self.save_path = self.path.replace("/experiment", "").replace(
+            "dataset", "result"
+        )
+        """数据集列表，为空，使用全部的数据集"""
+        self.dataset_list = dataset_list
+        if dataset_list == []:
+            self.dataset_list = list(SYNTHESIS_PARAMS.keys())
+        """使用的算法列表，为空，使用全部的算法(除了 DpcM。选项太多)"""
+        if algorithm_list == []:
+            self.algorithm_list = ALGORITHM_LIST
+
+    def deal_synthesis(self):
+        """
+        处理 synthesis 数据集
+        """
+        for data_name in self.dataset_list:
+            """遍历数据集"""
+        
 
 class RunUci:
     """
-    在 uci 数据集上进行实验
+    将 ALGORITHM_PARAMS 与 SYNTHESIS_PARAMS 合并，运行 uci 数据集
     """
 
 
 class RunImage:
     """
-    在 image 数据集上进行实验
+    将 ALGORITHM_PARAMS 与 IMAGE_PARAMS 合并，运行 image 数据集
     """

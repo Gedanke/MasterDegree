@@ -308,7 +308,7 @@ DpcM(参数可选)：percent 从 0.1 到 4.0，步长为 0.1，k 从 3 到 50，
 ALGORITHM_PARAMS = {
     "AC": {},
     "AP": {},
-    "Brich": {"threshold": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]},
+    "Birch": {"threshold": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]},
     "Dbscan": {
         "eps": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
         "min_samples": [1 + i for i in range(10)],
@@ -329,7 +329,7 @@ ALGORITHM_PARAMS = {
     "SnnDpc": {"k": [i for i in range(3, 51)]},
     "DpcCkrod": {"mu": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]},
     "DpcIRho": {
-        "k": [i for i in range(3, 51)],
+        "percent": [float(i / 10) for i in range(1, 41)],
         "mu": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
     },
     "DpcIAss": {
