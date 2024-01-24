@@ -8,7 +8,6 @@ from multiprocessing import Pool
 conf = dict()
 """Demo 中使用到的度量方法，这里用简写"""
 MOONS_DIS_METHOD = ["euc", "man", "gau", "rod", "krod", "ckrod"]
-# MOONS_DIS_METHOD = ["rod"]
 
 """
 运行算法
@@ -122,10 +121,21 @@ class RunDemo:
         p = Pool()
         """不同距离"""
         for dis_name in MOONS_DIS_METHOD:
+            """创建不同噪声级别的文件夹"""
+            if not os.path.isdir(
+                self.save_path + "result/moons/noise_" + str(self.data_params["noise"])
+            ):
+                os.mkdir(
+                    self.save_path
+                    + "result/moons/noise_"
+                    + str(self.data_params["noise"])
+                )
+
             file_path = (
                 self.save_path
-                + "result/moons/"
-                + "num_"
+                + "result/moons/noise_"
+                + str(self.data_params["noise"])
+                + "/num_"
                 + str(self.data_params["num"])
                 + "__"
             )
@@ -440,17 +450,101 @@ class RunSynthesis:
         """
         处理 synthesis 数据集
         """
+        """进程池"""
+        pool = Pool()
+
         for data_name in self.dataset_list:
             """遍历数据集"""
-        
+            run_data_algorithm(SYNTHESIS_PARAMS[data_name], self.algorithm_list, "rod")
+
+        pool.close()
+        pool.join()
+
 
 class RunUci:
     """
-    将 ALGORITHM_PARAMS 与 SYNTHESIS_PARAMS 合并，运行 uci 数据集
+    将 ALGORITHM_PARAMS 与 UCI_PARAMS 合并，运行 uci 数据集
     """
+
+    def __init__(
+        self, path="./dataset/experiment/uci/", dataset_list=[], algorithm_list=[]
+    ) -> None:
+        """
+        初始化相关成员
+        Args:
+            path (str, optional): 文件路径，由于调用该类的主程序路径待定，这里使用手动传入，同时根据该路径解析出保存路径. Defaults to "./dataset/experiment/uci/".
+            dataset_list (list, optional): 使用的数据集列表. Defaults to [].
+            algorithm_list (list, optional): 使用的算法列表. Defaults to [].
+        """
+        """文件路径"""
+        self.path = path
+        """保存结果路径"""
+        self.save_path = self.path.replace("/experiment", "").replace(
+            "dataset", "result"
+        )
+        """数据集列表，为空，使用全部的数据集"""
+        self.dataset_list = dataset_list
+        if dataset_list == []:
+            self.dataset_list = list(UCI_PATAMS.keys())
+        """使用的算法列表，为空，使用全部的算法(除了 DpcM。选项太多)"""
+        if algorithm_list == []:
+            self.algorithm_list = ALGORITHM_LIST
+
+    def deal_synthesis(self):
+        """
+        处理 uci 数据集
+        """
+        """进程池"""
+        pool = Pool()
+
+        for data_name in self.dataset_list:
+            """遍历数据集"""
+            run_data_algorithm(UCI_PATAMS[data_name], self.algorithm_list, "rod")
+
+        pool.close()
+        pool.join()
 
 
 class RunImage:
     """
     将 ALGORITHM_PARAMS 与 IMAGE_PARAMS 合并，运行 image 数据集
+    edit
     """
+
+    def __init__(
+        self, path="./dataset/experiment/image/", dataset_list=[], algorithm_list=[]
+    ) -> None:
+        """
+        初始化相关成员
+        Args:
+            path (str, optional): 文件路径，由于调用该类的主程序路径待定，这里使用手动传入，同时根据该路径解析出保存路径. Defaults to "./dataset/experiment/image/".
+            dataset_list (list, optional): 使用的数据集列表. Defaults to [].
+            algorithm_list (list, optional): 使用的算法列表. Defaults to [].
+        """
+        """文件路径"""
+        self.path = path
+        """保存结果路径"""
+        self.save_path = self.path.replace("/experiment", "").replace(
+            "dataset", "result"
+        )
+        """数据集列表，为空，使用全部的数据集"""
+        self.dataset_list = dataset_list
+        if dataset_list == []:
+            self.dataset_list = list(IMAGE_PARAMS.keys())
+        """使用的算法列表，为空，使用全部的算法(除了 DpcM。选项太多)"""
+        if algorithm_list == []:
+            self.algorithm_list = ALGORITHM_LIST
+
+    def deal_synthesis(self):
+        """
+        处理 image 数据集
+        """
+        """进程池"""
+        pool = Pool()
+
+        for data_name in self.dataset_list:
+            """遍历数据集"""
+            run_data_algorithm(IMAGE_PARAMS[data_name], self.algorithm_list, "rod")
+
+        pool.close()
+        pool.join()

@@ -9,6 +9,33 @@ import os
 
 from codes import *
 
+params = {
+    "moons": {
+        "norm": 0,
+        "gmu": 1,
+        "sigma": 1,
+        "noise": 0.15,
+        "type": "moons",
+        "noise_type": 0,
+        "num": 128,
+        "kmu": 5,
+        "ckmu": 20,
+        "factor": 0.3,
+    },
+    "circles": {
+        "norm": 0,
+        "gmu": 1,
+        "sigma": 1,
+        "noise": [float(i / 20) for i in range(6)],
+        "type": "circles",
+        "noise_type": 0,
+        "num": 128,
+        "kmu": 5,
+        "ckmu": 20,
+        "factor": 0.3,
+    },
+}
+
 
 def test_process():
     """
@@ -91,7 +118,7 @@ def generate_demo_data():
         "noise": 0.15,
         "type": "moons",
         "noise_type": 0,
-        "num": 1024,
+        "num": 128,
         "mu": 10,
         "factor": 0.3,
     }
@@ -106,7 +133,7 @@ def generate_demo_data():
         "noise": 0.15,
         "type": "circles",
         "noise_type": 0,
-        "num": 1024,
+        "num": 128,
         "mu": 10,
         "factor": 0.3,
     }
@@ -119,32 +146,7 @@ def generate_demo_data():
 
 def test_run_demo():
     """ """
-    params = {
-        "moons": {
-            "norm": 0,
-            "gmu": 1,
-            "sigma": 1,
-            "noise": 0.15,
-            "type": "moons",
-            "noise_type": 0,
-            "num": 1024,
-            "kmu": 5,
-            "ckmu": 20,
-            "factor": 0.3,
-        },
-        "circles": {
-            "norm": 0,
-            "gmu": 1,
-            "sigma": 1,
-            "noise": [float(i / 20) for i in range(6)],
-            "type": "circles",
-            "noise_type": 0,
-            "num": 1024,
-            "kmu": 5,
-            "ckmu": 20,
-            "factor": 0.3,
-        },
-    }
+
     rd = RunDemo("./dataset/experiment/demo/", params)
     rd.deal_moons()
     rd.deal_circles()
@@ -168,6 +170,18 @@ def test_run_synthesis():
     rs.deal_synthesis()
 
 
+def test_analyze_demo():
+    """"""
+    ad = AnalyzeDemo("./result/demo/result/", params)
+    ad.analyze_demo()
+
+
+def test_plot_demo():
+    """"""
+    pd = PlotDemo("./result/demo/result/", params)
+    pd.show_moons()
+
+
 if __name__ == "__main__":
     """"""
     # test_process()
@@ -177,4 +191,6 @@ if __name__ == "__main__":
     # generate_demo_data()
     # test_run_demo()
     # print("sss")
-    test_run_synthesis()
+    # test_run_synthesis()
+    # test_analyze_demo()
+    test_plot_demo()
