@@ -178,8 +178,16 @@ def test_analyze_demo():
 
 def test_plot_demo():
     """"""
-    pd = PlotDemo("./result/demo/result/", params)
-    pd.show_moons()
+    pd = PlotDemo("./result/demo/analyze/", params)
+    # pd.show_moons()
+    pd.show_circles()
+
+
+def test_myplot():
+    """"""
+    mp = MyPlot("./result/diagram/")
+    # mp.improve_rho()
+    mp.two_step_assign()
 
 
 if __name__ == "__main__":
@@ -193,4 +201,5 @@ if __name__ == "__main__":
     # print("sss")
     # test_run_synthesis()
     # test_analyze_demo()
-    test_plot_demo()
+    # test_plot_demo()
+    test_myplot()

@@ -7,7 +7,7 @@ from multiprocessing import Pool
 
 conf = dict()
 """Demo 中使用到的度量方法，这里用简写"""
-MOONS_DIS_METHOD = ["euc", "man", "gau", "rod", "krod", "ckrod"]
+DIS_METHOD = ["euc", "man", "gau", "rod", "krod", "ckrod"]
 
 """
 运行算法
@@ -119,8 +119,7 @@ class RunDemo:
 
         """多进程"""
         p = Pool()
-        """不同距离"""
-        for dis_name in MOONS_DIS_METHOD:
+        for dis_name in DIS_METHOD:
             """创建不同噪声级别的文件夹"""
             if not os.path.isdir(
                 self.save_path + "result/moons/noise_" + str(self.data_params["noise"])
@@ -130,7 +129,7 @@ class RunDemo:
                     + "result/moons/noise_"
                     + str(self.data_params["noise"])
                 )
-
+            """不同距离"""
             file_path = (
                 self.save_path
                 + "result/moons/noise_"
@@ -168,12 +167,12 @@ class RunDemo:
         """不同噪声级别"""
         for i in self.data_params["noise"]:
             self.load_samples_msg("circles", i)
-            """不同距离"""
             """创建不同噪声级别的文件夹"""
             if not os.path.isdir(self.save_path + "result/circles/noise_" + str(i)):
                 os.mkdir(self.save_path + "result/circles/noise_" + str(i))
 
-            for dis_name in MOONS_DIS_METHOD:
+            for dis_name in DIS_METHOD:
+                """不同距离"""
                 file_path = (
                     self.save_path
                     + "result/circles/noise_"

@@ -94,6 +94,39 @@ class AnalyzeDemo:
             + ".csv",
         )
 
+        """在 circless 中，将原始数据集，与噪声数据集移动到 self.save_path + circless 下以及不同的 noise_level 文件夹下"""
+        """原始数据集"""
+        shutil.copy(
+            data_path
+            + "data/demo/circles__num_"
+            + str(self.params["circles"]["num"])
+            + "__factor_"
+            + str(self.params["circles"]["factor"])
+            + ".csv",
+            self.save_path
+            + "/circles/num_"
+            + str(self.params["circles"]["num"])
+            + ".csv",
+        )
+        """噪声数据集"""
+        for i in self.params["circles"]["noise"]:
+            shutil.copy(
+                data_path
+                + "experiment/demo/circles/circles__num_"
+                + str(self.params["circles"]["num"])
+                + "__factor_"
+                + str(self.params["circles"]["factor"])
+                + "__noise_"
+                + str(i)
+                + ".csv",
+                self.save_path
+                + "/circles/noise_"
+                + str(i)
+                + "/num_"
+                + str(self.params["circles"]["num"])
+                + ".csv",
+            )
+
 
 class AnalyzeSynthesis:
     """
@@ -101,5 +134,13 @@ class AnalyzeSynthesis:
     """
 
 
-class AnalyzeUCI:
-    """_summary_"""
+class AnalyzeUci:
+    """
+    分析 UCI 数据集，根据数据集的实验结果选择最佳的结果，将文件保存到 ./result/
+    """
+
+
+class AnalyzeImage:
+    """
+    分析 image 数据集，根据数据集的实验结果选择最佳的结果，将文件保存到 ./result/
+    """
