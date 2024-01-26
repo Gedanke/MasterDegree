@@ -228,7 +228,11 @@ def rods_fun(data_params, i, j, rank_order_table, euclidean_table, distance_meth
         """索引切片在 a 中的位置序数之和"""
         d_b_a = sum(numpy.where(x1 == slice_b_a[:, None])[-1])
         """rod"""
-        dis = (d_a_b + d_b_a) / min(o_a_b, o_b_a)
+        if o_a_b == 0 and o_b_a == 0:
+            """相同的样本，距离为 0"""
+            dis = 0
+        else:
+            dis = (d_a_b + d_b_a) / min(o_a_b, o_b_a)
     elif distance_method == "krod":
         """改进 rod"""
         l_a_b = o_a_b + o_b_a
@@ -299,7 +303,7 @@ Dpc：percent 从 0.1 到 4.0，步长为 0.1
 DpcD(参数可选)：percent 从 0.1 到 4.0，步长为 0.1，mu 从 1 开始，10 到 100，步长为 10
 DpcKnn：percent 从 0.1 到 4.0，步长为 0.1
 SnnDpc：k 从 3 到 50，步长为 1
-DpcCkrod：mu 从 1 开始，10 到 100，步长为 10
+DpcCkrod：percent 从 0.1 到 4.0，步长为 0.1，mu 从 1 开始，10 到 100，步长为 10
 DpcIRho：k 从 3 到 50，步长为 1，mu 从 1 开始，10 到 100，步长为 10
 DpcIAss：k 从 3 到 50，步长为 1，mu 从 1 开始，10 到 100，步长为 10
 DpcM(参数可选)：percent 从 0.1 到 4.0，步长为 0.1，k 从 3 到 50，步长为 1，mu 从 1 开始，10 到 100，步长为 10
@@ -327,9 +331,12 @@ ALGORITHM_PARAMS = {
     },
     "DpcKnn": {"percent": [float(i / 10) for i in range(1, 41)]},
     "SnnDpc": {"k": [i for i in range(3, 51)]},
-    "DpcCkrod": {"mu": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]},
-    "DpcIRho": {
+    "DpcCkrod": {
         "percent": [float(i / 10) for i in range(1, 41)],
+        "mu": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+    },
+    "DpcIRho": {
+        "k": [i for i in range(3, 51)],
         "mu": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
     },
     "DpcIAss": {

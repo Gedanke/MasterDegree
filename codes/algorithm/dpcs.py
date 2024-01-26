@@ -156,9 +156,9 @@ class DpcD(Dpc):
         for i in range(self.samples_num):
             for j in range(i + 1, self.samples_num):
                 """赋值"""
-                self.dis_matrix.at[i, j] = dis_array[num]
+                euclidean_table.at[i, j] = dis_array[num]
                 """处理对角元素"""
-                self.dis_matrix.at[j, i] = self.dis_matrix.at[i, j]
+                euclidean_table.at[j, i] = euclidean_table.at[i, j]
                 num += 1
 
         """对 euclidean_table 使用 argsort()，该函数会对矩阵的每一行从小到大排序，返回的是 euclidean_table 中索引"""
@@ -222,14 +222,18 @@ class DpcD(Dpc):
             """先切片，a 的排序列表中 [a, b] 的索引列表"""
             slice_a_b = x1[0 : o_a_b + 1]
             """索引切片在 b 中的位置序数之和"""
-            d_a_b = sum(numpy.where(x2 == slice_a_b[:, None])[-1])
+            d_a_b = int(sum(numpy.where(x2 == slice_a_b[:, None])[-1]))
             """d_b_a，在 b 的排序列表中，从 b 到 a 之间的所有元素在 a 的排序列表中的序数或者索引之和"""
             """先切片，b 的排序列表中 [b, a] 的索引列表"""
             slice_b_a = x2[0 : o_b_a + 1]
             """索引切片在 a 中的位置序数之和"""
-            d_b_a = sum(numpy.where(x1 == slice_b_a[:, None])[-1])
+            d_b_a = int(sum(numpy.where(x1 == slice_b_a[:, None])[-1]))
             """rod"""
-            dis = (d_a_b + d_b_a) / min(o_a_b, o_b_a)
+            if o_a_b == 0 and o_b_a == 0:
+                """相同的样本，距离为 0"""
+                dis = 0
+            else:
+                dis = (d_a_b + d_b_a) / min(o_a_b, o_b_a)
         elif self.distance_method == "krod":
             """krod"""
             l_a_b = o_a_b + o_b_a
@@ -403,7 +407,7 @@ class SnnDpc:
     SNN-DPC 算法
     """
 
-    def __init__(self, path, save_path="./result/", num=0, k=3, center=[]):
+    def __init__(self, path, save_path="./result/", num=0, k=3):
         """
         初始化相关成员
         Args:
@@ -411,7 +415,6 @@ class SnnDpc:
             save_path (str, optional): 保存结果的路径. Defaults to "./result/".
             num (int, optional): 聚类类簇数. Defaults to 0.
             k (int, optional): 近邻数. Defaults to 3.
-            center (list, optional): 聚类中心，可以人为指定，但为了统一起见，不建议这样做. Defaults to [].
         """
         """构造函数中的相关参数"""
         """文件完整路径"""
@@ -424,8 +427,6 @@ class SnnDpc:
         self.num = num
         """近邻数"""
         self.k = k
-        """聚类中心"""
-        self.center = numpy.array(center)
 
         """其他参数"""
         """数据集的所有样本点，不包括标签列"""
@@ -453,7 +454,7 @@ class SnnDpc:
         """加载数据集"""
         self.init_points_msg()
         """SNN-DPC"""
-        self.label_pred = self.snn_dpc()
+        self.center, self.label_pred = self.snn_dpc()
         """转化为 numpy"""
         self.label_pred = self.label_pred.tolist()
         """聚类结果，指标写入到 json 文件中"""
@@ -485,14 +486,14 @@ class SnnDpc:
         unassigned = -1
         n, d = self.samples.shape
 
-        """Compute distance"""
+        # Compute distance
         distance = squareform(pdist(self.samples))
 
-        """Compute neighbor"""
+        # Compute neighbor
         index_distance_asc = argsort(distance)
         index_neighbor = index_distance_asc[:, : self.k]
 
-        """Compute shared neighbor"""
+        # Compute shared neighbor
         index_shared_neighbor = empty([n, n, self.k], int)
         num_shared_neighbor = empty([n, n], int)
         for i in range(n):
@@ -506,8 +507,8 @@ class SnnDpc:
                     i, j, : shared.size
                 ] = shared
 
-        """Compute similarity"""
-        """Diagonal and some elements are 0"""
+        # Compute similarity
+        # Diagonal and some elements are 0
         similarity = zeros([n, n])
         for i in range(n):
             for j in range(i):
@@ -525,10 +526,10 @@ class SnnDpc:
                         num_shared_neighbor[i, j] ** 2 / distance_sum
                     )
 
-        """Compute ρ"""
+        # Compute ρ
         rho = sum(sort(similarity)[:, -self.k :], axis=1)
 
-        """Compute δ"""
+        # Compute δ
         distance_neighbor_sum = empty(n)
         for i in range(n):
             distance_neighbor_sum[i] = sum(distance[i, index_neighbor[i]])
@@ -547,19 +548,17 @@ class SnnDpc:
         delta[index_rho_desc[0]] = -inf
         delta[index_rho_desc[0]] = max(delta)
 
-        """Compute γ"""
+        # Compute γ
         gamma = rho * delta
 
-        """Compute centroid"""
+        # Compute centroid
         index_assignment = full(n, unassigned)
-        """not provide center"""
-        if len(self.center) == 0:
-            self.center = sort(argsort(gamma)[-self.num :])
-        # self.center = numpy.array([12, 253])
-        index_assignment[self.center] = arange(self.num)
+        index_centroid = sort(argsort(gamma)[-self.num :])
+        # index_centroid = numpy.array([12, 253])
+        index_assignment[index_centroid] = arange(self.num)
 
-        """Assign non-centroid step 1"""
-        queue = self.center.tolist()
+        # Assign non-centroid step 1
+        queue = index_centroid.tolist()
         while queue:
             a = queue.pop(0)
             for b in index_neighbor[a]:
@@ -570,7 +569,7 @@ class SnnDpc:
                     index_assignment[b] = index_assignment[a]
                     queue.append(b)
 
-        """Assign non-centroid step 2"""
+        # Assign non-centroid step 2
         index_unassigned = argwhere(index_assignment == unassigned).flatten()
         while index_unassigned.size:
             num_neighbor_assignment = zeros([index_unassigned.size, self.num], int)
@@ -586,7 +585,7 @@ class SnnDpc:
             else:
                 self.k += 1
 
-        return index_assignment
+        return index_centroid, index_assignment
 
     def get_file_path(self):
         """

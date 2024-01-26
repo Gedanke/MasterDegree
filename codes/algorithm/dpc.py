@@ -131,6 +131,7 @@ class Dpc:
             """默认不使用"""
             cluster_results, halo = self.get_halo(rho, cluster_results, dc)
             self.cluster_result["halo"] = halo
+
         """获取聚类结果"""
         self.gain_label_pred(cluster_results)
         """聚类结果，指标写入到 json 文件中"""

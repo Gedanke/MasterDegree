@@ -110,9 +110,9 @@ class DpcCkrod(Dpc):
         for i in range(self.samples_num):
             for j in range(i + 1, self.samples_num):
                 """赋值"""
-                self.dis_matrix.at[i, j] = dis_array[num]
+                euclidean_table.at[i, j] = dis_array[num]
                 """处理对角元素"""
-                self.dis_matrix.at[j, i] = self.dis_matrix.at[i, j]
+                euclidean_table.at[j, i] = euclidean_table.at[i, j]
                 num += 1
 
         """对 euclidean_table 使用 argsort()，该函数会对矩阵的每一行从小到大排序，返回的是 euclidean_table 中索引"""
@@ -590,9 +590,9 @@ class DpcM(Dpc):
         for i in range(self.samples_num):
             for j in range(i + 1, self.samples_num):
                 """赋值"""
-                self.dis_matrix.at[i, j] = dis_array[num]
+                euclidean_table.at[i, j] = dis_array[num]
                 """处理对角元素"""
-                self.dis_matrix.at[j, i] = self.dis_matrix.at[i, j]
+                euclidean_table.at[j, i] = euclidean_table.at[i, j]
                 num += 1
 
         """对 euclidean_table 使用 argsort()，该函数会对矩阵的每一行从小到大排序，返回的是 euclidean_table 中索引"""
@@ -663,7 +663,11 @@ class DpcM(Dpc):
             """索引切片在 a 中的位置序数之和"""
             d_b_a = sum(numpy.where(x1 == slice_b_a[:, None])[-1])
             """rod"""
-            dis = (d_a_b + d_b_a) / min(o_a_b, o_b_a)
+            if o_a_b == 0 and o_b_a == 0:
+                """相同的样本，距离为 0"""
+                dis = 0
+            else:
+                dis = (d_a_b + d_b_a) / min(o_a_b, o_b_a)
         elif self.distance_method == "krod":
             """改进 rod"""
             l_a_b = o_a_b + o_b_a

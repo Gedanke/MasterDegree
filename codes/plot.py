@@ -3,10 +3,6 @@
 
 import matplotlib.pyplot as plt
 from sklearn.datasets import *
-from sklearn.manifold import MDS
-from sklearn.preprocessing import StandardScaler
-import scipy.cluster.hierarchy as sch
-from multiprocessing.pool import Pool
 from .analyze import *
 
 """

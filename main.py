@@ -170,6 +170,31 @@ def test_run_synthesis():
     rs.deal_synthesis()
 
 
+def test_run_uci():
+    """"""
+    dl = ["iris"]
+    #     [
+    #     "AC",
+    #     "AP",
+    #     "Birch",
+    #     "Dbscan",
+    #     "Kmeans",
+    #     "MeanShit",
+    #     "Optics",
+    #     "Sc",
+    #     "Dpc",
+    #     "DpcD",
+    #     "DpcKnn",
+    #     "SnnDpc",
+    #     "DpcCkrod",
+    #     "DpcIRho",
+    #     "DpcIAss",
+    # ]
+    al = ["DpcD"]
+    ru = RunUci("./dataset/experiment/uci/", dl, al)
+    ru.deal_uci()
+
+
 def test_analyze_demo():
     """"""
     ad = AnalyzeDemo("./result/demo/result/", params)
@@ -178,16 +203,16 @@ def test_analyze_demo():
 
 def test_plot_demo():
     """"""
-    pd = PlotDemo("./result/demo/analyze/", params)
+    # pd = PlotDemo("./result/demo/analyze/", params)
     # pd.show_moons()
-    pd.show_circles()
+    # pd.show_circles()
 
 
 def test_myplot():
     """"""
-    mp = MyPlot("./result/diagram/")
+    # mp = MyPlot("./result/diagram/")
     # mp.improve_rho()
-    mp.two_step_assign()
+    # mp.two_step_assign()
 
 
 if __name__ == "__main__":
@@ -202,4 +227,10 @@ if __name__ == "__main__":
     # test_run_synthesis()
     # test_analyze_demo()
     # test_plot_demo()
-    test_myplot()
+    # test_myplot()
+    # test_run_uci()
+    dataset_params = UCI_PATAMS["iris"]
+    path = dataset_params["path"]
+    save_path = dataset_params["save_path"]
+    num = dataset_params["num"]
+    DpcD(path, save_path, num, 0.1, 1, 0, 0, "rod")

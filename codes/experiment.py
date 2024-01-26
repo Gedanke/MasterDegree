@@ -217,7 +217,7 @@ def run_data_algorithm(pool, dataset_params, algorithm_list, distance_method):
                 path,
                 save_path,
                 num,
-                ALGORITHM_LIST["AC"],
+                ALGORITHM_PARAMS["AC"],
             ),
         )
     if "AP" in algorithm_list:
@@ -227,7 +227,7 @@ def run_data_algorithm(pool, dataset_params, algorithm_list, distance_method):
                 path,
                 save_path,
                 num,
-                ALGORITHM_LIST["AP"],
+                ALGORITHM_PARAMS["AP"],
             ),
         )
     if "Birch" in algorithm_list:
@@ -260,7 +260,7 @@ def run_data_algorithm(pool, dataset_params, algorithm_list, distance_method):
                 path,
                 save_path,
                 num,
-                ALGORITHM_LIST["Kmeans"],
+                ALGORITHM_PARAMS["Kmeans"],
             ),
         )
     if "MeanShit" in algorithm_list:
@@ -270,7 +270,7 @@ def run_data_algorithm(pool, dataset_params, algorithm_list, distance_method):
                 path,
                 save_path,
                 num,
-                ALGORITHM_LIST["MeanShit"],
+                ALGORITHM_PARAMS["MeanShit"],
             ),
         )
     if "Optics" in algorithm_list:
@@ -442,6 +442,7 @@ class RunSynthesis:
         if dataset_list == []:
             self.dataset_list = list(SYNTHESIS_PARAMS.keys())
         """使用的算法列表，为空，使用全部的算法(除了 DpcM。选项太多)"""
+        self.algorithm_list = algorithm_list
         if algorithm_list == []:
             self.algorithm_list = ALGORITHM_LIST
 
@@ -454,7 +455,9 @@ class RunSynthesis:
 
         for data_name in self.dataset_list:
             """遍历数据集"""
-            run_data_algorithm(SYNTHESIS_PARAMS[data_name], self.algorithm_list, "rod")
+            run_data_algorithm(
+                pool, SYNTHESIS_PARAMS[data_name], self.algorithm_list, "rod"
+            )
 
         pool.close()
         pool.join()
@@ -486,10 +489,11 @@ class RunUci:
         if dataset_list == []:
             self.dataset_list = list(UCI_PATAMS.keys())
         """使用的算法列表，为空，使用全部的算法(除了 DpcM。选项太多)"""
+        self.algorithm_list = algorithm_list
         if algorithm_list == []:
             self.algorithm_list = ALGORITHM_LIST
 
-    def deal_synthesis(self):
+    def deal_uci(self):
         """
         处理 uci 数据集
         """
@@ -498,7 +502,7 @@ class RunUci:
 
         for data_name in self.dataset_list:
             """遍历数据集"""
-            run_data_algorithm(UCI_PATAMS[data_name], self.algorithm_list, "rod")
+            run_data_algorithm(pool, UCI_PATAMS[data_name], self.algorithm_list, "rod")
 
         pool.close()
         pool.join()
@@ -531,10 +535,11 @@ class RunImage:
         if dataset_list == []:
             self.dataset_list = list(IMAGE_PARAMS.keys())
         """使用的算法列表，为空，使用全部的算法(除了 DpcM。选项太多)"""
+        self.algorithm_list = algorithm_list
         if algorithm_list == []:
             self.algorithm_list = ALGORITHM_LIST
 
-    def deal_synthesis(self):
+    def deal_image(self):
         """
         处理 image 数据集
         """
@@ -543,7 +548,9 @@ class RunImage:
 
         for data_name in self.dataset_list:
             """遍历数据集"""
-            run_data_algorithm(IMAGE_PARAMS[data_name], self.algorithm_list, "rod")
+            run_data_algorithm(
+                pool, IMAGE_PARAMS[data_name], self.algorithm_list, "rod"
+            )
 
         pool.close()
         pool.join()

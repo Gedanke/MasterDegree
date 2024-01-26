@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-import copy
 import os
 import shutil
-import matplotlib.pyplot as plt
-from multiprocessing.pool import Pool
 from .experiment import *
 
 
@@ -127,6 +124,8 @@ class AnalyzeDemo:
                 + ".csv",
             )
 
+def analyze_data_algorithm():
+    pass
 
 class AnalyzeSynthesis:
     """
