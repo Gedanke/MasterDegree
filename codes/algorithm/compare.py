@@ -38,7 +38,7 @@ class ComBase:
         """保存结果的文件路径"""
         self.save_path = save_path
         """聚类类簇数，必须指定"""
-        self.num = num
+        self.num = int(num)
         """从文件路径中获取文件名(不含后缀)"""
         self.data_name = os.path.splitext(os.path.split(self.path)[-1])[0]
         """聚类算法需要的参数"""

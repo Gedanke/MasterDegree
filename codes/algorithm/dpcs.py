@@ -424,9 +424,9 @@ class SnnDpc:
         """从文件路径中获取文件名(不含后缀)"""
         self.data_name = os.path.splitext(os.path.split(self.path)[-1])[0]
         """聚类类簇数，最好指定，也可以从文件中读取得到(默认从最后一列中读取)"""
-        self.num = num
+        self.num = int(num)
         """近邻数"""
-        self.k = k
+        self.k = int(k)
 
         """其他参数"""
         """数据集的所有样本点，不包括标签列"""

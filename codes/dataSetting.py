@@ -444,3 +444,22 @@ TWO_STEP_CLUSTERS = {
         ]
     ),
 }
+"""结果模板，用于比较获取最优结果"""
+RESULT_TEMPLATE = {
+    "label": [],
+    "center": [],
+    "davies_bouldin": -1,
+    "calinski_harabasz": -1,
+    "silhouette_coefficient": -1,
+    "cluster_acc": -1,
+    "rand_index": -1,
+    "adjusted_rand_index": -1,
+    "mutual_info": -1,
+    "normalized_mutual_info": -1,
+    "adjusted_mutual_info": -1,
+    "homogeneity": -1,
+    "completeness": -1,
+    "v_measure": -1,
+    "h_c_v_m": [-1, -1, -1],
+    "fowlkes_mallows_index": -1,
+}

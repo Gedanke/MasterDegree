@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-import sys
 import os
+import sys
 
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # sys.path.append(BASE_DIR)
@@ -173,23 +173,6 @@ def test_run_synthesis():
 def test_run_uci():
     """"""
     dl = ["iris"]
-    #     [
-    #     "AC",
-    #     "AP",
-    #     "Birch",
-    #     "Dbscan",
-    #     "Kmeans",
-    #     "MeanShit",
-    #     "Optics",
-    #     "Sc",
-    #     "Dpc",
-    #     "DpcD",
-    #     "DpcKnn",
-    #     "SnnDpc",
-    #     "DpcCkrod",
-    #     "DpcIRho",
-    #     "DpcIAss",
-    # ]
     al = ["DpcD"]
     ru = RunUci("./dataset/experiment/uci/", dl, al)
     ru.deal_uci()
@@ -203,16 +186,35 @@ def test_analyze_demo():
 
 def test_plot_demo():
     """"""
-    # pd = PlotDemo("./result/demo/analyze/", params)
-    # pd.show_moons()
-    # pd.show_circles()
+    pd = PlotDemo("./result/demo/analyze/", params)
+    pd.show_moons()
+    pd.show_circles()
 
 
 def test_myplot():
     """"""
-    # mp = MyPlot("./result/diagram/")
-    # mp.improve_rho()
-    # mp.two_step_assign()
+    mp = MyPlot("./result/diagram/")
+    mp.improve_rho()
+    mp.two_step_assign()
+
+
+def test_analyze_synthesis():
+    """"""
+    as_ = AnalyzeSynthesis()
+    as_.analyze_synthesis()
+
+
+def test_analyze_uci():
+    """"""
+    as_ = AnalyzeUci()
+    as_.analyze_uci()
+
+
+def test_plot_synthesis():
+    """"""
+    ps = PlotSynthesis()
+    # ps.show_rho_compare()
+    ps.show_cluster_results()
 
 
 if __name__ == "__main__":
@@ -229,8 +231,13 @@ if __name__ == "__main__":
     # test_plot_demo()
     # test_myplot()
     # test_run_uci()
-    dataset_params = UCI_PATAMS["iris"]
-    path = dataset_params["path"]
-    save_path = dataset_params["save_path"]
-    num = dataset_params["num"]
-    DpcD(path, save_path, num, 0.1, 1, 0, 0, "rod")
+    # dataset_params = UCI_PATAMS["iris"]
+    # path = dataset_params["path"]
+    # save_path = dataset_params["save_path"]
+    # num = dataset_params["num"]
+    # DpcD(path, save_path, num, 0.1, 1, 0, 0, "rod")
+
+    # test_analyze_synthesis()
+    # test_analyze_uci()
+
+    test_plot_synthesis()

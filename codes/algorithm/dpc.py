@@ -51,9 +51,9 @@ class Dpc:
         """从文件路径中获取文件名(不含后缀)"""
         self.data_name = os.path.splitext(os.path.split(self.path)[-1])[0]
         """聚类类簇数，最好指定，也可以从文件中读取得到(默认从最后一列中读取)"""
-        self.num = num
+        self.num = int(num)
         """截断距离百分比数"""
-        self.dc_percent = dc_percent
+        self.dc_percent = float(dc_percent)
         """截断距离计算方法"""
         self.dc_method = dc_method
         """局部密度计算方法"""
@@ -86,6 +86,10 @@ class Dpc:
         self.dis_matrix = pandas.DataFrame({})
         """聚类结果指标"""
         self.cluster_result = dict()
+        """将 dc，rho，delta 设置为成员，方便作图"""
+        self.dc = 0
+        self.rho = None
+        self.delta = None
 
         """保存文件相关参数"""
         """算法名称"""
@@ -111,25 +115,26 @@ class Dpc:
     def cluster(self):
         """
         聚类过程
+        之后再将传入成员变量作为函数参数的方法进行修改，edit
         """
         """获取数据集相对固定的成员信息：样本点，样本数"""
         self.init_points_msg()
         """获取数据集其他相关的成员信息：距离矩阵，距离列表，最大距离，最小距离"""
         dis_array, max_dis, min_dis = self.load_points_msg()
         """计算截断距离"""
-        dc = self.get_dc(dis_array, max_dis, min_dis)
+        self.dc = self.get_dc(dis_array, max_dis, min_dis)
         """计算局部密度"""
-        rho = self.get_rho(dc)
+        self.rho = self.get_rho(self.dc)
         """计算相对距离 delta"""
-        delta = self.get_delta(rho)
+        self.delta = self.get_delta(self.rho)
         """确定聚类中心，计算 gamma(局部密度于相对距离的乘积)"""
-        gamma = self.get_center(rho, delta)
+        gamma = self.get_center(self.rho, self.delta)
         """非聚类中心样本点分配"""
-        cluster_results = self.assign_samples(rho, self.center)
+        cluster_results = self.assign_samples(self.rho, self.center)
         """光晕点"""
         if self.use_halo:
             """默认不使用"""
-            cluster_results, halo = self.get_halo(rho, cluster_results, dc)
+            cluster_results, halo = self.get_halo(self.rho, cluster_results, self.dc)
             self.cluster_result["halo"] = halo
 
         """获取聚类结果"""
