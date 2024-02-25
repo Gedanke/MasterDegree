@@ -7,7 +7,7 @@ from multiprocessing import Pool
 
 conf = dict()
 """Demo 中使用到的度量方法，这里用简写"""
-DIS_METHOD = ["euc", "man", "gau", "rod", "krod", "ckrod"]
+DIS_METHOD = ["cosine", "euc", "gau", "man", "rod", "krod", "ckrod"]
 
 """
 运行算法

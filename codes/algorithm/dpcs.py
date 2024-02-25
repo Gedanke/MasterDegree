@@ -129,7 +129,7 @@ class DpcD(Dpc):
         """判断度量方法"""
         if self.distance_method in METRIC_METHOD:
             """使用 sch.distance.pdist 中提供的方法"""
-            return self.distance_standard(self.distance_method)
+            return self.distance_standard()
         elif self.distance_method in ROD_METHOD:
             if self.distance_method == "krod":
                 """krod 需要参数 mu"""

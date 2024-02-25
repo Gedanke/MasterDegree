@@ -517,7 +517,7 @@ class DpcM(Dpc):
                 "dcp_" + str(self.dc_percent) + "__dcm_" + str(self.dc_method)
             )
 
-            return self.distance_standard(self.distance_method)
+            return self.distance_standard()
         elif self.distance_method in {"rod", "krod", "ckrod"}:
             if self.distance_method == "krod":
                 """krod"""

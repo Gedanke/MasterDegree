@@ -8,7 +8,11 @@ from sklearn.datasets import *
 from sklearn.preprocessing import StandardScaler
 import scipy.cluster.hierarchy as sch
 from sklearn.manifold import MDS
-from sklearn.metrics.pairwise import manhattan_distances, euclidean_distances
+from sklearn.metrics.pairwise import (
+    manhattan_distances,
+    euclidean_distances,
+    cosine_distances,
+)
 
 
 def noramlized(param, data):
@@ -109,12 +113,13 @@ def get_circles(params):
     return data, label
 
 
-def distance_gas(data_params, samples):
+def distance_gas(data_params, samples, param):
     """
     高斯度量
     Args:
         data_params (_type_): 数据集的参数
         samples (_type_): 数据集矩阵
+        param (_type_): 参数
     Returns:
         dis_matrix (_type_): 距离矩阵
     """
@@ -125,7 +130,7 @@ def distance_gas(data_params, samples):
     for i in range(samples_num):
         for j in range(samples_num):
             dis_matrix[i, j] = math.exp(
-                -sum((samples[i] - samples[j]) ** 2) / (0.2**2)
+                -sum((samples[i] - samples[j]) ** 2) / (param["gmu"] ** 2)
             )
 
     return dis_matrix
@@ -273,6 +278,9 @@ def multi_deal_demo(data_params, samples, labels, dis_name, save_path):
     elif dis_name == "man":
         """曼哈顿距离"""
         save_data = mds.fit_transform(manhattan_distances(samples))
+    elif dis_name == "cosine":
+        """cosine"""
+        save_data = mds.fit_transform(cosine_distances(samples))
     elif dis_name == "gau":
         """高斯核"""
         save_data = mds.fit_transform(distance_gas(data_params, samples))
@@ -294,11 +302,11 @@ def multi_deal_demo(data_params, samples, labels, dis_name, save_path):
 AC: 使用默认参数
 AP: 使用默认参数
 Brich: threshold 从 0.1 到 1，步长为 1
-Dbscan：eps 从 0.1 到 1，步长为 1，min_samples 从 0.1 到 1，步长为 1
+Dbscan：eps 从 0.1 到 1，步长为 0.1，min_samples 从 1 到 10，步长为 1
 KMeans: 使用默认参数
 MeanShit：使用默认参数
-Optics：eps 从 0.1 到 1，步长为 1，min_samples 从 0.1 到 1，步长为 1
-Sc：gamma 从 0.05 到 5.0，步长为 0.5
+Optics：eps 从 0.1 到 1，步长为 0.1，min_samples 从 0 到 10，步长为 1
+Sc：gamma 从 0.5 到 5.0，步长为 0.5
 Dpc：percent 从 0.1 到 4.0，步长为 0.1
 DpcD(参数可选)：percent 从 0.1 到 4.0，步长为 0.1，mu 从 1 开始，10 到 100，步长为 10
 DpcKnn：percent 从 0.1 到 4.0，步长为 0.1
@@ -382,19 +390,19 @@ RHO_COMPARE = numpy.array(
 TWO_STEP_CLUSTERS = {
     "cluster1": numpy.array(
         [
-            [0.5, 0.5],
+            [0.5, 0.6],
             [0.3, 1.2],
-            [1, 1.5],
+            [1.0, 1.5],
             [0.7, 2.0],
-            [2, 0.3],
+            [2.0, 0.7],
             [0.8, 0.8],
-            [2.2, 4],
-            [1.5, 3.5],
+            [2.2, 3.0],
+            [1.5, 3.0],
             [2.5, 3.2],
-            [2.1, 2],
-            [1.5, 4],
+            [2.1, 2.0],
+            [1.5, 4.5],
             [1.3, 3.6],
-            [1.4, 3.0],
+            [1.4, 1.9],
             [0.6, 2.5],
         ]
     ),
@@ -403,6 +411,11 @@ TWO_STEP_CLUSTERS = {
             [3, 12],
             [2.5, 10],
             [2, 10.5],
+            [2.2, 9],
+            [1.9, 8.5],
+            [2.4, 7],
+            [1.8, 6.5],
+            [1.5, 7.2],
             [4, 11.2],
             [2.7, 11],
             [5.6, 8.2],
@@ -415,12 +428,20 @@ TWO_STEP_CLUSTERS = {
             [6.2, 7.6],
             [6.4, 8],
             [7.5, 6.7],
-            [7.8, 7],
-            [8.1, 7],
+            [7.8, 7.0],
+            [7.1, 8.9],
+            [7.0, 7.8],
+            [7.6, 7.9],
+            [6.1, 9],
             [8.3, 7.1],
             [5, 6.4],
             [4.5, 6.1],
+            [3.5, 6.1],
             [4.3, 6.3],
+            [3.2, 9],
+            [2.9, 8.5],
+            [4.2, 8],
+            [3.9, 7.5],
         ]
     ),
     "cluster3": numpy.array(
@@ -428,19 +449,98 @@ TWO_STEP_CLUSTERS = {
             [12, 3],
             [11, 2],
             [11.5, 3.5],
-            [11.5, 2.4],
+            [11.5, 2.3],
+            [10.5, 3.3],
+            [10.5, 2.4],
+            [8.5, 3.2],
+            [9.5, 2.5],
             [12.5, 4],
-            [8, 4.5],
+            [8.0, 4.5],
             [6.5, 4],
             [7.1, 4.2],
             [8.9, 4.9],
             [10, 4],
-            [9, 3.5],
+            [9.0, 3.5],
             [10.9, 4.2],
             [9.3, 3.9],
-            [8, 6.5],
-            [7, 6],
-            [5.8, 5.8],
+            [5.5, 4.8],
+            [5.6, 5.1],
+            [7.5, 5.9],
+            [8.1, 5.6],
+            [5.8, 6.1],
+            [9.6, 6.0],
+            [8.2, 4.8],
+            [6.8, 5.0],
+            [6.0, 3.5],
+            [6.1, 4.5],
+            [6.2, 5.0],
+            [6.4, 5.5],
+            [7.0, 3.5],
+            [8.1, 3.5],
+            [6.3, 3.3],
+            [5.9, 4.2],
+        ]
+    ),
+}
+"""一步分配策略演示图所需数据集点"""
+ONE_STEP_CLUSTERS = {
+    "cluster1": numpy.array(
+        [
+            [0.55, 0.1],
+            [0.45, 0.1],
+            [0.5, 0.1],
+            [0.6, 0.18],
+            [0.4, 0.18],
+            [0.5, 0.18],
+            [0.63, 0.27],
+            [0.37, 0.27],
+            [0.5, 0.27],
+            [0.45, 0.27],
+            [0.55, 0.27],
+            [0.7, 0.27],
+            [0.3, 0.27],
+            [0.6, 0.36],
+            [0.4, 0.36],
+            [0.28, 0.36],
+            [0.72, 0.36],
+            [0.15, 0.36],
+            [0.85, 0.36],
+            [0.2, 0.36],
+            [0.8, 0.36],
+            [0.5, 0.38],
+            [0.5, 0.32],
+            [0.56, 0.40],
+            [0.44, 0.40],
+        ]
+    ),
+    "cluster2": numpy.array(
+        [
+            [0.55, 0.92],
+            [0.45, 0.92],
+            [0.5, 0.92],
+            [0.6, 0.84],
+            [0.4, 0.84],
+            [0.5, 0.84],
+            [0.63, 0.76],
+            [0.37, 0.76],
+            [0.5, 0.76],
+            [0.57, 0.68],
+            [0.43, 0.68],
+            [0.5, 0.68],
+            [0.4, 0.68],
+            [0.65, 0.68],
+            [0.35, 0.68],
+            [0.6, 0.68],
+            [0.25, 0.68],
+            [0.75, 0.68],
+            [0.2, 0.68],
+            [0.8, 0.68],
+            [0.54, 0.62],
+            [0.46, 0.62],
+            [0.52, 0.60],
+            [0.48, 0.60],
+            [0.5, 0.65],
+            # [0.48, 0.55],
         ]
     ),
 }
