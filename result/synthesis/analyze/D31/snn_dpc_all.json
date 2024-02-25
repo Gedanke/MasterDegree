@@ -1,0 +1,1 @@
+{"ACC": [0.976129], "AMI": [0.964492], "ARI": [0.951515], "NMI": [0.966129], "FMI": [0.953064], "FILE_NAME": ["snn_dpc__k_41.json"], "cluster_acc": 0.976129, "adjusted_mutual_info": 0.964492, "adjusted_rand_index": 0.951515, "fowlkes_mallows_index": 0.953064, "normalized_mutual_info": 0.966129, "file_name": "snn_dpc__k_41.json"}
