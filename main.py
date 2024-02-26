@@ -194,7 +194,7 @@ def test_plot_demo():
 
 def test_myplot():
     """"""
-    mp = MyPlot("./result/diagram/")
+    mp = MyPlot("./result/", "./result/diagram/")
     """两步样本分配策略演示图，第一张图"""
     mp.two_step_assign1()
     """两步样本分配策略演示图，第二张图"""
@@ -316,23 +316,39 @@ def helper_dpc():
     num = SYNTHESIS_PARAMS[data_name]["num"]
     # _percent = 1.0
     # Dpc(path, save_path, num, _percent)
-    _percent = 1.2
-    DpcKnn(path, save_path, num, _percent)
-    # _k = 41
+    # _percent = 1.2
+    # DpcKnn(path, save_path, num, _percent)
+    _k = 41
     # SnnDpc(path, save_path, num, _k)
-    # DpcIRho(
-    #     path,
-    #     save_path,
-    #     num,
-    #     _percent,
-    #     1,
-    #     0,
-    #     0,
-    #     "euclidean",
-    #     [],
-    #     False,
-    #     {"k": 32, "mu": 10},
-    # )
+    DpcIRho(
+        path,
+        save_path,
+        num,
+        1,
+        1,
+        0,
+        0,
+        "euclidean",
+        [],
+        False,
+        {"k": 32, "mu": 10},
+    )
+
+
+def test_plot_uci():
+    """ """
+    path = "E:/14+/windows10/codes/python/ky/thesisResult/LW_DCP/V6/results/"
+    al = ["dpc_Rho_iAss", "dpc_iRho_iAss"]
+    """dpc_Rho_iAss"""
+    pu = PlotUci(path, al)
+    pu.show_euc_k()
+    pu.show_ckrod_k()
+    pu.show_ckrod_mu()
+    pu.show_order_sensitivity()
+
+
+def test_analyze_image():
+    """ """
 
 
 if __name__ == "__main__":
@@ -341,7 +357,7 @@ if __name__ == "__main__":
     """demo"""
     # generate_demo_data()
     # test_run_demo()
-    # test_analyze_demo()
+    test_analyze_demo()
     # test_plot_demo()
     # a = 0.1
     # print("{:.2f}".format(a))
@@ -350,7 +366,8 @@ if __name__ == "__main__":
     # test_analyze_synthesis()
     # test_plot_synthesis()
     # helper_dpc()
-    # l = {"a": [0, 1]}
+    l = {"a": [0, 1]}
+    # print("a" in l.keys())
     # l["a"][0], l["a"][1] = l["a"][1], l["a"][0]
     # print(l)
     # test_distance_dpc()
@@ -362,16 +379,16 @@ if __name__ == "__main__":
     # test_run_demo()
     # print("sss")
     # test_run_synthesis()
-
     # test_myplot()
-    # test_run_uci()
     # dataset_params = UCI_PATAMS["iris"]
     # path = dataset_params["path"]
     # save_path = dataset_params["save_path"]
     # num = dataset_params["num"]
     # DpcD(path, save_path, num, 0.1, 1, 0, 0, "rod")
 
+    """uci"""
     # test_analyze_synthesis()
     # test_analyze_uci()
+    # test_plot_uci()
 
-    # test_plot_synthesis()
+    """image"""

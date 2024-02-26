@@ -354,7 +354,6 @@ def _show_data(plot, path, data_name):
         path (_type_): 工作目录
         data_name (_type_): 数据集名称
     Returns:
-        _type_: _description_
     """
     """原始数据"""
     data = pandas.read_csv(path + "analyze/" + data_name + ".csv")
@@ -948,7 +947,8 @@ class PlotSynthesis:
                     self.font,
                     y=-0.1,
                 )
-            """保存图片"""
+
+        """保存图片"""
         plt.tight_layout()
         plt.subplots_adjust(wspace=0, hspace=0.1)  # 调整子图间距
         plt.savefig(self.path + "plot/lw_dpc_deffect.pdf")
@@ -979,26 +979,26 @@ class PlotUci:
     """
     处理 Uci 数据集相关的绘图
     1. 根据 ./result/uci/analyze/ 下的数据集绘制图，将图存放到 ./result/uci/plot/，需要降维
-    2. 参数验证(也涉及到 Synthesis 部分的数据集)
+    2. 参数验证(也涉及到 Synthesis 部分的数据集)，将图统一存放到 ./result/uci/plot/，默认是四个聚类指标都有，ACC，AMI，ARI，FMI
     """
 
-    def __init__(self, path="./result/", dpc_algorithm="dpc_irho") -> None:
+    def __init__(self, path="./result/", dpc_algorithm=["dpc_iass"]) -> None:
         """
         初始化相关成员
         Args:
             path (str, optional): 工作目录. Defaults to "./result/".
-            dpc_algorithm (str, optional): 对比算法. Defaults to "dpc_irho".
+            dpc_algorithm (str, optional): 对比算法. Defaults to "dpc_iass".
         """
         """保存结果路径"""
         self.path = path
         """字体配置"""
         self.font = {
             "family": "Times New Roman",
-            "color": "black",
+            # "color": "black",
             "size": 16,
         }
-        """参与 param_argue 的数据列表"""
-        self.param_argue_dataset_list = [
+        """合成数据集"""
+        self.synthesis_dataset_list = [
             "aggregation",
             "compound",
             "D31",
@@ -1008,45 +1008,9 @@ class PlotUci:
             "R15",
             "S2",
             "spiral",
-            "abalone",
-            "blood",
-            "dermatology",
-            "ecoli",
-            "glass",
-            "iris",
-            "isolet",
-            "jaffe",
-            "letter",
-            "libras",
-            "lung",
-            "magic",
-            "parkinsons",
-            "pima",
-            "seeds",
-            "segment",
-            "sonar",
-            "spambase",
-            "teaching",
-            "tox171",
-            "twonorm",
-            "usps",
-            "waveform",
-            "waveformNoise",
-            "wdbc",
-            "wilt",
-            "wine",
         ]
-        """参与 param_order 的数据列表"""
+        """UCI 数据集"""
         self.param_order_dataset_list = [
-            "aggregation",
-            "compound",
-            "D31",
-            "flame",
-            "jain",
-            "pathbased",
-            "R15",
-            "S2",
-            "spiral",
             "abalone",
             "blood",
             "dermatology",
@@ -1078,20 +1042,341 @@ class PlotUci:
         """添加对比算法"""
         self.dpc_algorithm = dpc_algorithm
 
-    def param_argue_k(self):
+    def gain_cluster_index(self, dataset_list, param_dict):
         """
-        对 k 进行讨论，涉及到的指标有
+        寻找对应参数下算法在 dataset_list 上每个数据集的聚类指标
+        Args:
+            dataset_list (_type_): 数据集列表
+            param_dict (_type_): 参数字典，依据参数寻找对应的文件，并获得聚类指标
+            以单一数据集角度，用到哪种传哪种：
+            {
+                "dataset":{
+                    "euc_mu": -, 寻找的是欧式距离下所有的 k 的文件对应的指标列表
+                    "ckrod_mu": mu_value, 寻找的是该 mu_value 下所有的 k 的文件对应的指标列表
+                    "ckrod_k": k_value, 寻找的是该 k_value 下所有的 mu 的文件对应的指标列表
+                    "order_sensitivity": {"k": k_value, "mu": mu_value}, 寻找的是该列表内所有的样本顺序的文件对应的指标列表
+                }
+            }
+        Returns:
+            acc_dict (_type_): acc
+            ami_dict (_type_): ami
+            ari_dict (_type_): ari
+            fmi_dict (_type_): fmi
         """
+        """指标字典"""
+        acc_dict = dict()
+        ami_dict = dict()
+        ari_dict = dict()
+        fmi_dict = dict()
 
-    def param_argue_mu(self):
-        """
-        对 mu 进行讨论
-        """
+        for data in dataset_list:
+            """文件路径"""
+            data_path = self.path
+            """数据集对应的参数"""
+            data_param = param_dict[data]
+            """指标"""
+            acc_dict[data] = list()
+            ami_dict[data] = list()
+            ari_dict[data] = list()
+            fmi_dict[data] = list()
 
-    def param_order_sensitivity(self):
+            if data in self.synthesis_dataset_list:
+                """合成数据集"""
+                data_path += "synthesis/"
+            else:
+                """uci 数据集"""
+                # data_path += "uci/"
+                data_path += "real/"
+
+            """添加数据集与算法路径"""
+            data_path += "result/" + data + "/"
+
+            """根据参数类型判断寻找什么样的文件"""
+            if "euc_mu" in data_param.keys():
+                """寻找的是欧式距离下所有的 k 的文件对应的指标列表"""
+                data_path += self.dpc_algorithm[0] + "/"
+                """k 的范围是 [4, 64]"""
+                file_list = [
+                    "rho_3__dem_1__ush_0__k_" + str(k) + ".json"
+                    for k in list(range(4, 65))
+                ]
+            elif "ckrod_mu" in data_param.keys():
+                """寻找的是该 mu_value 下所有的 k 的文件对应的指标列表"""
+                data_path += self.dpc_algorithm[1] + "/"
+                """mu 确定，k 的范围是 [4, 64]"""
+                file_list = [
+                    "rho_3__dem_1__ush_0__k_"
+                    + str(k)
+                    + "__mu_"
+                    + str(float(data_param["ckrod_mu"]))
+                    + ".json"
+                    for k in list(range(4, 65))
+                ]
+            elif "ckrod_k" in data_param.keys():
+                """寻找的是该 k_value 下所有的 mu 的文件对应的指标列表"""
+                data_path += self.dpc_algorithm[1] + "/"
+                """k 确定，mu 的范围是 [1, 100]"""
+                file_list = [
+                    "rho_3__dem_1__ush_0__k_"
+                    + str(int(data_param["ckrod_k"]))
+                    + "__mu_"
+                    + str(float(mu))
+                    + ".json"
+                    for mu in list(range(1, 101))
+                ]
+            elif "order_sensitivity" in data_param.keys():
+                """寻找的是该列表内所有的样本顺序的文件对应的指标列表"""
+                if "euc_mu" in data_param["order_sensitivity"]:
+                    """只有 k"""
+                    data_path += self.dpc_algorithm[0] + "/"
+                    file_list = [
+                        "k_"
+                        + str(data_param["order_sensitivity"]["euc_mu"])
+                        + "__idx_"
+                        + str(idx)
+                        + ".json"
+                        for idx in range(1, 31)
+                    ]
+                else:
+                    """有 k 跟 mu"""
+                    data_path += self.dpc_algorithm[1] + "/"
+                    file_list = [
+                        "k_"
+                        + str(data_param["order_sensitivity"]["ckrod_k"])
+                        + "__idx_"
+                        + str(idx)
+                        + "__mu_"
+                        + str(data_param["order_sensitivity"]["ckrod_mu"])
+                        + ".json"
+                        for idx in range(1, 31)
+                    ]
+
+            """读取文件"""
+            for file in file_list:
+                with open(data_path + file, "r") as f:
+                    d = json.load(f)
+
+                acc_dict[data].append(round(d["cluster_acc"], 4))
+                ami_dict[data].append(round(d["adjusted_mutual_info"], 4))
+                ari_dict[data].append(round(d["adjusted_rand_index"], 4))
+                fmi_dict[data].append(round(d["fowlkes_mallows_index"], 4))
+
+        return acc_dict, ami_dict, ari_dict, fmi_dict
+
+    def _show_cluster_index(self, plot, cluster_index, dataset_list):
         """
-        对样本顺序进行讨论
+        绘制一个聚类指标
+        Args:
+            plot (_type_): 绘图句柄
+            cluster_index (_type_): 聚类指标
+            dataset_list (_type_): 涉及的数据集，主要用来画图例
         """
+        """指标结果长度判断"""
+        x_len = len(cluster_index[dataset_list[1]])
+        if x_len == 61:
+            """k"""
+            xticks = list(range(4, 65))
+            plot.set_xticks(numpy.linspace(xticks[0], xticks[-1], 13))
+            plot.set_xlim(xticks[0], xticks[-1])
+        elif x_len == 100:
+            """mu"""
+            xticks = list(range(1, 101))
+            plot.set_xticks([1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+            plot.set_xlim(xticks[0], xticks[-1])
+        elif x_len == 30:
+            """random state"""
+            xticks = list(range(1, 31))
+            plot.set_xticks([1, 5, 10, 15, 20, 25, 30])
+            plot.set_xlim(xticks[0], xticks[-1])
+
+        for index_list in cluster_index.values():
+            plot.plot(xticks, index_list, marker=".", linewidth=1, markersize=8)
+
+        plot.set_ylim(0, 1.05)
+        plot.set_yticks(numpy.linspace(0, 1, 11))
+        plot.legend(dataset_list, loc="lower right", prop=self.font)
+
+    def show_euc_k(self):
+        """
+        对使用欧式距离作为度量的 DPC-TAS 的 k 进行讨论，对应第四章，倒数第四张图
+        """
+        """使用的数据集"""
+        dataset_list = ["aggregation", "D31", "flame", "R15", "S2", "spiral"]
+        """每个数据集对应的参数"""
+        param_dict = {
+            "aggregation": {"euc_mu": 0},
+            "D31": {"euc_mu": 0},
+            "flame": {"euc_mu": 0},
+            "R15": {"euc_mu": 0},
+            "S2": {"euc_mu": 0},
+            "spiral": {"euc_mu": 0},
+            "jain": {"euc_mu": 0},
+        }
+        """指标字典"""
+        acc_dict, ami_dict, ari_dict, fmi_dict = self.gain_cluster_index(
+            dataset_list, param_dict
+        )
+
+        """绘图"""
+        fig, axes = plt.subplots(2, 2, figsize=(18, 18))
+        self._show_cluster_index(axes[0][0], acc_dict, dataset_list)
+        axes[0][0].set_title(PLOT_TITLE_NUM[0] + "ACC", self.font, y=-0.12)
+        axes[0][0].set_xlabel(r"k", fontdict=self.font)
+        axes[0][0].set_ylabel(r"ACC", fontdict=self.font)
+        self._show_cluster_index(axes[0][1], ami_dict, dataset_list)
+        axes[0][1].set_title(PLOT_TITLE_NUM[1] + "AMI", self.font, y=-0.12)
+        axes[0][1].set_xlabel(r"k", fontdict=self.font)
+        axes[0][1].set_ylabel(r"AMI", fontdict=self.font)
+        self._show_cluster_index(axes[1][0], ari_dict, dataset_list)
+        axes[1][0].set_title(PLOT_TITLE_NUM[2] + "ARI", self.font, y=-0.12)
+        axes[1][0].set_xlabel(r"k", fontdict=self.font)
+        axes[1][0].set_ylabel(r"ARI", fontdict=self.font)
+        self._show_cluster_index(axes[1][1], fmi_dict, dataset_list)
+        axes[1][1].set_title(PLOT_TITLE_NUM[3] + "FMI", self.font, y=-0.12)
+        axes[1][1].set_xlabel(r"k", fontdict=self.font)
+        axes[1][1].set_ylabel(r"FMI", fontdict=self.font)
+
+        plt.tight_layout()
+        plt.subplots_adjust(wspace=0.1, hspace=0.18)
+        plt.savefig("./result/uci/plot/euc_k.pdf", bbox_inches="tight")
+        plt.show()
+
+    def show_ckrod_k(self):
+        """
+        对使用 CKROD 作为度量的 DPC-TAS 的 k 进行讨论，对应第四章，倒数第三张图
+        """
+        """使用的数据集"""
+        dataset_list = ["Dermatology", "Iris", "Seeds", "Wine"]
+        """每个数据集对应的参数"""
+        param_dict = {
+            "Dermatology": {"ckrod_mu": 9},
+            "Iris": {"ckrod_mu": 20},
+            "Seeds": {"ckrod_mu": 12},
+            "Wine": {"ckrod_mu": 1},
+        }
+        """指标字典"""
+        acc_dict, ami_dict, ari_dict, fmi_dict = self.gain_cluster_index(
+            dataset_list, param_dict
+        )
+
+        """绘图"""
+        fig, axes = plt.subplots(2, 2, figsize=(18, 18))
+        self._show_cluster_index(axes[0][0], acc_dict, dataset_list)
+        axes[0][0].set_title(PLOT_TITLE_NUM[0] + "ACC", self.font, y=-0.12)
+        axes[0][0].set_xlabel(r"k", fontdict=self.font)
+        axes[0][0].set_ylabel(r"ACC", fontdict=self.font)
+        self._show_cluster_index(axes[0][1], ami_dict, dataset_list)
+        axes[0][1].set_title(PLOT_TITLE_NUM[1] + "AMI", self.font, y=-0.12)
+        axes[0][1].set_xlabel(r"k", fontdict=self.font)
+        axes[0][1].set_ylabel(r"AMI", fontdict=self.font)
+        self._show_cluster_index(axes[1][0], ari_dict, dataset_list)
+        axes[1][0].set_title(PLOT_TITLE_NUM[2] + "ARI", self.font, y=-0.12)
+        axes[1][0].set_xlabel(r"k", fontdict=self.font)
+        axes[1][0].set_ylabel(r"ARI", fontdict=self.font)
+        self._show_cluster_index(axes[1][1], fmi_dict, dataset_list)
+        axes[1][1].set_title(PLOT_TITLE_NUM[3] + "FMI", self.font, y=-0.12)
+        axes[1][1].set_xlabel(r"k", fontdict=self.font)
+        axes[1][1].set_ylabel(r"FMI", fontdict=self.font)
+
+        plt.tight_layout()
+        plt.subplots_adjust(wspace=0.1, hspace=0.18)
+        plt.savefig("./result/uci/plot/ckrod_k.pdf", bbox_inches="tight")
+        plt.show()
+
+    def show_ckrod_mu(self):
+        """
+        对使用 CKROD 作为度量的 DPC-TAS 的 mu 进行讨论，对应第四章，倒数第二张图
+        """
+        """使用的数据集"""
+        dataset_list = ["Dermatology", "Iris", "Seeds", "Wine"]
+        """每个数据集对应的参数"""
+        param_dict = {
+            "Dermatology": {"ckrod_k": 16},
+            "Iris": {"ckrod_k": 17},
+            "Seeds": {"ckrod_k": 7},
+            "Wine": {"ckrod_k": 27},
+        }
+        """指标字典"""
+        acc_dict, ami_dict, ari_dict, fmi_dict = self.gain_cluster_index(
+            dataset_list, param_dict
+        )
+
+        """绘图"""
+        fig, axes = plt.subplots(2, 2, figsize=(18, 18))
+        self._show_cluster_index(axes[0][0], acc_dict, dataset_list)
+        axes[0][0].set_title(PLOT_TITLE_NUM[0] + "ACC", self.font, y=-0.12)
+        axes[0][0].set_xlabel(r"$\mu$", fontdict=self.font)
+        axes[0][0].set_ylabel(r"ACC", fontdict=self.font)
+        self._show_cluster_index(axes[0][1], ami_dict, dataset_list)
+        axes[0][1].set_title(PLOT_TITLE_NUM[1] + "AMI", self.font, y=-0.12)
+        axes[0][1].set_xlabel(r"$\mu$", fontdict=self.font)
+        axes[0][1].set_ylabel(r"AMI", fontdict=self.font)
+        self._show_cluster_index(axes[1][0], ari_dict, dataset_list)
+        axes[1][0].set_title(PLOT_TITLE_NUM[2] + "ARI", self.font, y=-0.12)
+        axes[1][0].set_xlabel(r"$\mu$", fontdict=self.font)
+        axes[1][0].set_ylabel(r"ARI", fontdict=self.font)
+        self._show_cluster_index(axes[1][1], fmi_dict, dataset_list)
+        axes[1][1].set_title(PLOT_TITLE_NUM[3] + "FMI", self.font, y=-0.12)
+        axes[1][1].set_xlabel(r"$\mu$", fontdict=self.font)
+        axes[1][1].set_ylabel(r"FMI", fontdict=self.font)
+
+        plt.tight_layout()
+        plt.subplots_adjust(wspace=0.1, hspace=0.18)
+        plt.savefig("./result/uci/plot/ckrod_mu.pdf", bbox_inches="tight")
+        plt.show()
+
+    def show_order_sensitivity(self):
+        """
+        对使用 CKROD 作为度量的 DPC-TAS 的样本顺序进行讨论，对应第四章，倒数第一张图
+        """
+        """使用的数据集"""
+        dataset_list = [
+            "spiral",
+            "R15",
+            "D31",
+            "Seeds",
+            "Isolet",
+            "Parkinsons",
+            "Segment",
+        ]
+        """每个数据集对应的参数"""
+        param_dict = {
+            "spiral": {"order_sensitivity": {"euc_mu": 4}},
+            "R15": {"order_sensitivity": {"euc_mu": 10}},
+            "D31": {"order_sensitivity": {"euc_mu": 27}},
+            "Seeds": {"order_sensitivity": {"ckrod_k": 7, "ckrod_mu": 1.0}},
+            "Isolet": {"order_sensitivity": {"ckrod_k": 23, "ckrod_mu": 20.0}},
+            "Parkinsons": {"order_sensitivity": {"ckrod_k": 8, "ckrod_mu": 15.0}},
+            "Segment": {"order_sensitivity": {"ckrod_k": 18, "ckrod_mu": 11.0}},
+        }
+        """指标字典"""
+        acc_dict, ami_dict, ari_dict, fmi_dict = self.gain_cluster_index(
+            dataset_list, param_dict
+        )
+
+        """绘图"""
+        fig, axes = plt.subplots(2, 2, figsize=(18, 18))
+        self._show_cluster_index(axes[0][0], acc_dict, dataset_list)
+        axes[0][0].set_title(PLOT_TITLE_NUM[0] + "ACC", self.font, y=-0.12)
+        axes[0][0].set_xlabel(r"random state", fontdict=self.font)
+        axes[0][0].set_ylabel(r"ACC", fontdict=self.font)
+        self._show_cluster_index(axes[0][1], ami_dict, dataset_list)
+        axes[0][1].set_title(PLOT_TITLE_NUM[1] + "AMI", self.font, y=-0.12)
+        axes[0][1].set_xlabel(r"random state", fontdict=self.font)
+        axes[0][1].set_ylabel(r"AMI", fontdict=self.font)
+        self._show_cluster_index(axes[1][0], ari_dict, dataset_list)
+        axes[1][0].set_title(PLOT_TITLE_NUM[2] + "ARI", self.font, y=-0.12)
+        axes[1][0].set_xlabel(r"random state", fontdict=self.font)
+        axes[1][0].set_ylabel(r"ARI", fontdict=self.font)
+        self._show_cluster_index(axes[1][1], fmi_dict, dataset_list)
+        axes[1][1].set_title(PLOT_TITLE_NUM[3] + "FMI", self.font, y=-0.12)
+        axes[1][1].set_xlabel(r"random state", fontdict=self.font)
+        axes[1][1].set_ylabel(r"FMI", fontdict=self.font)
+
+        plt.tight_layout()
+        plt.subplots_adjust(wspace=0.1, hspace=0.18)
+        plt.savefig("./result/uci/plot/sample_order.pdf", bbox_inches="tight")
+        plt.show()
 
 
 class PlotImage:
@@ -1100,11 +1385,11 @@ class PlotImage:
     1. 主要是聚类结果展示
     """
 
-    def __init__(self, save_path="./result/diagram/") -> None:
+    def __init__(self, save_path="./result/image/") -> None:
         """
         初始化相关成员
         Args:
-            save_path (str, optional): 保存结果的路径. Defaults to "./result/diagram/".
+            save_path (str, optional): 保存结果的路径. Defaults to "./result/image/".
         """
         """保存结果路径"""
         self.save_path = save_path

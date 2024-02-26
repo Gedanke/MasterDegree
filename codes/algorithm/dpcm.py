@@ -248,18 +248,22 @@ class DpcIRho(DpcCkrod):
         """删去 self.rho_method，因为在这个类里面，局部密度计算方法将做出调整"""
         """度量方法默认为 ckrod"""
         self.file_name = (
-            "dem_"
+            self.distance_method
+            + "__"
+            + "dem_"
             + str(self.delta_method)
             + "__k_"
             + str(self.params["k"])
-            + "__mu_"
-            + str(self.params["mu"])
         )
         """use_halo 几乎不用，只有用的时候才加上"""
         if self.use_halo:
             self.file_name += "__ush_" + str(int(self.use_halo))
 
-        return self.distance_ckrod()
+        if self.distance_method in {"rod", "krod", "ckrod"}:
+            self.file_name += "__mu_" + str(self.params["mu"])
+            return self.distance_ckrod()
+        else:
+            return self.distance_standard()
 
     def get_rho(self, dc):
         """
