@@ -950,7 +950,7 @@ class PlotSynthesis:
 
         """保存图片"""
         plt.tight_layout()
-        plt.subplots_adjust(wspace=0, hspace=0.1)  # 调整子图间距
+        plt.subplots_adjust(wspace=0, hspace=0.1)  
         plt.savefig(self.path + "plot/lw_dpc_deffect.pdf")
         plt.show()
 

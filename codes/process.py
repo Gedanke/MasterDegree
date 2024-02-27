@@ -17,7 +17,7 @@ class DealData:
     """
     数据处理类，提供不同的方法处理实验所需的不同类型数据(位于 raw 下)
     所有的数据集格式都是 pandas.DataFrame，列名从 0 开始，最后一列 label 为标签，精度保留2位数即可，不需要高精度
-    实验所需的数据都需要归一化
+    除了图像数据集外，实验所需的数据都需要归一化
     """
 
     def __init__(self, path, params={}):
@@ -195,9 +195,29 @@ class DealData:
     def deal_image(self):
         """
         处理 raw 下的 image 数据集，将处理好的原始数据集存放到 data 下的 image 文件下
-        图像数据集冗余度高，建议不要用 csv 格式，这块之后再处理
+        图像数据集冗余度高，可以使用 csv 格式，也可以把 mat 文件移动过去
         """
-        pass
+        dir_path = DATA_PATH + "raw/" + self.path + "/"
+
+        for dataset in os.listdir(dir_path):
+            """加载数据"""
+            data = loadmat(dir_path + dataset + "/" + dataset + ".mat")
+            # dd = data["X"][0:101]
+
+            # fig, axes = plt.subplots(10, 10, figsize=(18, 18))
+            # for i in range(10):
+            #     for j in range(10):
+            #         d = dd[i * 10 + j].reshape(
+            #             int(math.sqrt(int(dd[i * 10 + j].shape[0]))),
+            #             int(math.sqrt(int(dd[i * 10 + j].shape[0]))),
+            #         )
+            #         axes[i][j].imshow(d)
+            #         axes[i][j].set_xticks(())
+            #         axes[i][j].set_yticks(())
+
+            # plt.tight_layout()
+            # plt.subplots_adjust(wspace=0, hspace=0)
+            # plt.show()
 
     def get_demo(self):
         """

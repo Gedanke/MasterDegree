@@ -41,17 +41,17 @@ def test_process():
     """
     test for process
     """
-    # param = {
-    #     "norm": 0,
-    #     "gmu": 1,
-    #     "sigma": 1,
-    #     "noise": 0.1,
-    #     "type": "moons",
-    #     "noise_type": 0,
-    #     "num": 1024,
-    #     "mu": 4,
-    #     "factor": 0.5,
-    # }
+    param = {
+        "norm": 0,
+        "gmu": 1,
+        "sigma": 1,
+        "noise": 0.1,
+        "type": "moons",
+        "noise_type": 0,
+        "num": 1024,
+        "mu": 4,
+        "factor": 0.5,
+    }
     # dd = DealData("demo", param)
     # dd.deal_demo()
     # dd.get_demo()
@@ -61,6 +61,8 @@ def test_process():
     # dd = DealData("uci", param)
     # dd.deal_uci()
     # dd.get_uci()
+    dd = DealData("image", param)
+    dd.deal_image()
 
 
 def test_compare():
@@ -392,3 +394,4 @@ if __name__ == "__main__":
     # test_plot_uci()
 
     """image"""
+    test_process()
