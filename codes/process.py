@@ -2,6 +2,7 @@
 
 
 import os
+import shutil
 import random
 import numpy
 import pandas
@@ -201,23 +202,23 @@ class DealData:
 
         for dataset in os.listdir(dir_path):
             """加载数据"""
-            data = loadmat(dir_path + dataset + "/" + dataset + ".mat")
-            # dd = data["X"][0:101]
-
-            # fig, axes = plt.subplots(10, 10, figsize=(18, 18))
-            # for i in range(10):
-            #     for j in range(10):
-            #         d = dd[i * 10 + j].reshape(
-            #             int(math.sqrt(int(dd[i * 10 + j].shape[0]))),
-            #             int(math.sqrt(int(dd[i * 10 + j].shape[0]))),
-            #         )
-            #         axes[i][j].imshow(d)
-            #         axes[i][j].set_xticks(())
-            #         axes[i][j].set_yticks(())
-
-            # plt.tight_layout()
-            # plt.subplots_adjust(wspace=0, hspace=0)
-            # plt.show()
+            mat_data = loadmat(dir_path + dataset + "/" + dataset + ".mat")
+            """数据(不归一化)位于 X，标签(规整)位于 Y"""
+            label = normalized_label(list(mat_data["Y"]))
+            raw_data = pandas.DataFrame(mat_data["X"])
+            """合并数据集"""
+            data = raw_data.join(pandas.DataFrame({"label": label}))
+            """以防万一，修改下列标签，这里暂时不创建文件夹"""
+            data.columns = list(range(len(data.columns) - 1)) + ["label"]
+            data.to_csv(
+                DATA_PATH + "data/" + self.path + "/" + dataset + ".csv",
+                index=False,
+            )
+            """移动 mat 文件"""
+            shutil.copyfile(
+                dir_path + dataset + "/" + dataset + ".mat",
+                DATA_PATH + "data/" + self.path + "/" + dataset + ".mat",
+            )
 
     def get_demo(self):
         """
@@ -467,5 +468,39 @@ class DealData:
     def get_image(self):
         """
         处理 data 路径下的 image 数据集，将实验所需的数据集存放到 experiment 下的 image 文件下(创建对应的数据集名命名的文件夹)
+        将 csv ，mat 文件移动过去
         """
-        pass
+        dir_path = DATA_PATH + "data/" + self.path + "/"
+
+        for dataset in os.listdir(dir_path):
+            file_name = os.path.splitext(dataset)[0]
+            """创建文件夹"""
+            if not os.path.isdir(
+                DATA_PATH + "experiment/" + self.path + "/" + file_name + "/"
+            ):
+                os.mkdir(DATA_PATH + "experiment/" + self.path + "/" + file_name + "/")
+
+            """移动 csv 文件"""
+            shutil.copyfile(
+                dir_path + file_name + ".csv",
+                DATA_PATH
+                + "experiment/"
+                + self.path
+                + "/"
+                + file_name
+                + "/"
+                + file_name
+                + ".csv",
+            )
+            """移动 mat 文件"""
+            shutil.copyfile(
+                dir_path + file_name + ".mat",
+                DATA_PATH
+                + "experiment/"
+                + self.path
+                + "/"
+                + file_name
+                + "/"
+                + file_name
+                + ".mat",
+            )

@@ -62,7 +62,8 @@ def test_process():
     # dd.deal_uci()
     # dd.get_uci()
     dd = DealData("image", param)
-    dd.deal_image()
+    # dd.deal_image()
+    # dd.get_image()
 
 
 def test_compare():
@@ -349,8 +350,78 @@ def test_plot_uci():
     pu.show_order_sensitivity()
 
 
+def test_run_image():
+    """"""
+    ri = RunImage()
+    print(ri.algorithm_list)
+
+
 def test_analyze_image():
     """ """
+    ai = AnalyzeImage()
+    ai.analyze_image()
+
+
+def rename_file():
+    """"""
+    for p in os.listdir("./result/image/result/coil20/dpc_iass/"):
+        # p = "rho_3__dem_1__ush_0__k_3__mu_1.0.json"
+        file = os.path.splitext(p)[0]
+        p_l = file.split("__")
+        new_file = ""
+        for ele in p_l:
+            _par = ele.split("_")[0]
+            _val = ele.split("_")[1]
+            if _par == "dem":
+                new_file += ele + "__"
+            if _par == "k":
+                new_file += ele + "__"
+            if _par == "mu":
+                new_file += "mu_" + str(int(float(_val)))
+        new_file += ".json"
+
+        os.rename(
+            "./result/image/result/coil20/dpc_iass/" + p,
+            "./result/image/result/coil20/dpc_iass/" + new_file,
+        )
+
+
+def remove_label():
+    """"""
+    path = "E:/14+/windows10/codes/python/ky/thesisResult/LW_DCP/V4/real/datas/COIL20/dpc_iRho_iAss/"
+    new_file_path = "./result/image/result/coil20/dpc_iass/"
+    for p in os.listdir(path):
+        # p = "rho_3__dem_1__ush_0__k_3__mu_1.0.json"
+        file = os.path.splitext(p)[0]
+        p_l = file.split("__")
+        new_file = ""
+        for ele in p_l:
+            _par = ele.split("_")[0]
+            _val = ele.split("_")[1]
+            if _par == "dem":
+                new_file += ele + "__"
+            if _par == "k":
+                new_file += ele + "__"
+            if _par == "mu":
+                new_file += "mu_" + str(int(float(_val)))
+        new_file += ".json"
+        """加载 new_file"""
+        with open(new_file_path + new_file, "r") as f:
+            d = json.load(f)
+        label = list(pandas.read_csv(path + p)["num"])
+        d["label"] = label
+        """写回"""
+        with open(new_file_path + new_file, "w", encoding="utf-8") as f:
+            f.write(json.dumps(d, ensure_ascii=False))
+
+
+def test_plot_image():
+    """ """
+    pi = PlotImage()
+    # pi.show_coil20()
+    # pi.show_jaffe()
+    # pi.show_mnist_test()
+    # pi.show_usps()
 
 
 if __name__ == "__main__":
@@ -359,7 +430,7 @@ if __name__ == "__main__":
     """demo"""
     # generate_demo_data()
     # test_run_demo()
-    test_analyze_demo()
+    # test_analyze_demo()
     # test_plot_demo()
     # a = 0.1
     # print("{:.2f}".format(a))
@@ -394,4 +465,21 @@ if __name__ == "__main__":
     # test_plot_uci()
 
     """image"""
-    test_process()
+    # test_process()
+    # test_run_image()
+    # rename_file()
+    # test_analyze_image()
+    # test_plot_image()
+    # remove_label()
+
+    # 定义一个长度为 n 的列表
+    from sklearn.datasets import fetch_olivetti_faces
+
+    # 加载 Olivetti Faces 数据集
+    faces_data = fetch_olivetti_faces()
+
+    # 获取数据和目标标签
+    X_faces = faces_data.data
+    y_faces = faces_data.target
+    print(X_faces)
+    print(y_faces)

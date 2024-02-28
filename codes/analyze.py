@@ -2,7 +2,6 @@
 
 
 import os
-import copy
 import shutil
 from .experiment import *
 
@@ -332,13 +331,24 @@ class AnalyzeImage:
 
         """遍历数据集"""
         for data_name in os.listdir(self.path):
-            """遍历算法"""
-            for algorithm_name in os.listdir(self.path + data_name):
-                """获取最优结果"""
-                analyze_data_algorithm(self.save_path, data_name, algorithm_name)
+            """test"""
+            if data_name in ["coil20", "jaffe"]:
+                """遍历算法"""
+                for algorithm_name in os.listdir(self.path + data_name):
+                    """获取最优结果"""
+                    analyze_data_algorithm(self.save_path, data_name, algorithm_name)
 
-            """移动原始数据集"""
-            shutil.copy(
-                data_path + data_name + "/" + data_name + ".csv",
-                self.save_path + "analyze/" + data_name + ".csv",
-            )
+                """移动原始数据集"""
+                shutil.copy(
+                    data_path + data_name + "/" + data_name + ".csv",
+                    self.save_path + "analyze/" + data_name + ".csv",
+                )
+                """移动 mat 文件"""
+                shutil.copy(
+                    "./dataset/experiment/image/"
+                    + data_name
+                    + "/"
+                    + data_name
+                    + ".mat",
+                    self.save_path + "analyze/" + data_name + ".mat",
+                )

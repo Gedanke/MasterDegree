@@ -54,24 +54,29 @@
 
 ### 合成数据集
 
-| Dataset | Number of instances | Number of features | Number of classes | Source |
-| :---------: | :-----------------: | :-----------------: | :---------------: | :----: |
-| Aggregation | 788 | 2 | 7 |  |
-| Compound | 399 | 2 | 2 |  |
-| D31 | 3100 | 2 | 31 |  |
-| DIM512 | 1024 | 512 | 16 |  |
-| Flame | 240 | 2 | 2 |  |
-| Jain | 373 | 2 | 2 |  |
-| Pathbased | 300 | 2 | 3 |  |
-| R15 | 600 | 2 | 15 |  |
-| S2 | 5000 | 2 | 15 |  |
-| Spiral | 412 | 2 | 3 |  |
+|   Dataset   | Number of instances | Number of features | Number of classes | Source |
+| :---------: | :-----------------: | :----------------: | :---------------: | :----: |
+| Aggregation |         788         |         2         |         7         |        |
+|  Compound  |         399         |         2         |         2         |        |
+|     D31     |        3100        |         2         |        31        |        |
+|   DIM512   |        1024        |        512        |        16        |        |
+|    Flame    |         240         |         2         |         2         |        |
+|    Jain    |         373         |         2         |         2         |        |
+|  Pathbased  |         300         |         2         |         3         |        |
+|     R15     |         600         |         2         |        15        |        |
+|     S2     |        5000        |         2         |        15        |        |
+|   Spiral   |         412         |         2         |         3         |        |
 
 Digits
 USPS
 MNIST-test
 Fashion
 Letter
+
+https://github.com/gagolews/clustering-data-v0
+
+https://clustering-benchmarks.gagolewski.com/
+
 
 ## UCI 数据集
 
@@ -85,35 +90,35 @@ Letter
 
 Real-world datasets
 
-| Dataset | Number of instances | Number of  features | Number of classes | Source |
+|    Dataset    | Number of instances | Number of  features | Number of classes | Source |
 | :-----------: | :-----------------: | :-----------------: | :---------------: | :----: |
-| Abalone | 4177 | 8 | 3 |  |
-| Blood | 784 | 5 | 2 |  |
-| Coil20 |  |  |   |  |
-| Dermatology | 366 | 34 | 6 |  |
-| Ecoil | 336 | 7 | 8 |  |
-| Glass | 214 | 9 | 6 |  |
-| Iris | 150 | 4 | 3 |  |
-| Isolet | 1560  | 617 | 26 |  |
-| Jaffe | 213 | 65536 | 10 |  |
-| Letter | 20000 | 16 | 26 |  |
-| libras | 360 | 90 | 15 |  |
-| Lung | 203 | 3312 | 5 |  |
-| Magic | 19020 | 10 | 2 |  |
-| Parkinsons | 195 | 23 | 2 |  |
-| Pima | 768 | 8 | 2 |  |
-| Seeds | 210 | 7 | 3 |  |
-| Segment | 2310 | 19 | 7 |  |
-| Sonar | 208 | 60 | 2 |  |
-| Spambase | 4601 | 57 | 2 |  |
-| Teaching | 151 | 5 | 3 |  |
-| Tox_171 | 171 | 5748 | 4 |  |
-| Twonorm | 7400 | 20 | 2 |  |
-| Usps | 11000 | 256 | 10 |  |
-| Waveform | 5000 | 21 | 3 |  |
-| WaveformNoise | 5000 | 40 | 3 |  |
-| Wdbc | 569 | 30 | 2 |  |
-| Wilt | 4839 | 13 | 3 |  |
-| Wine | 178 | 13 | 3 |  |
+|    Abalone    |        4177        |          8          |         3         |        |
+|     Blood     |         784         |          5          |         2         |        |
+|    Coil20    |                    |                    |                  |        |
+|  Dermatology  |         366         |         34         |         6         |        |
+|     Ecoil     |         336         |          7          |         8         |        |
+|     Glass     |         214         |          9          |         6         |        |
+|     Iris     |         150         |          4          |         3         |        |
+|    Isolet    |        1560        |         617         |        26        |        |
+|     Jaffe     |         213         |        65536        |        10        |        |
+|    Letter    |        20000        |         16         |        26        |        |
+|    libras    |         360         |         90         |        15        |        |
+|     Lung     |         203         |        3312        |         5         |        |
+|     Magic     |        19020        |         10         |         2         |        |
+|  Parkinsons  |         195         |         23         |         2         |        |
+|     Pima     |         768         |          8          |         2         |        |
+|     Seeds     |         210         |          7          |         3         |        |
+|    Segment    |        2310        |         19         |         7         |        |
+|     Sonar     |         208         |         60         |         2         |        |
+|   Spambase   |        4601        |         57         |         2         |        |
+|   Teaching   |         151         |          5          |         3         |        |
+|    Tox_171    |         171         |        5748        |         4         |        |
+|    Twonorm    |        7400        |         20         |         2         |        |
+|     Usps     |        11000        |         256         |        10        |        |
+|   Waveform   |        5000        |         21         |         3         |        |
+| WaveformNoise |        5000        |         40         |         3         |        |
+|     Wdbc     |         569         |         30         |         2         |        |
+|     Wilt     |        4839        |         13         |         3         |        |
+|     Wine     |         178         |         13         |         3         |        |
 
 ---

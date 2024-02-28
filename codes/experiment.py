@@ -515,14 +515,17 @@ class RunImage:
     """
 
     def __init__(
-        self, path="./dataset/experiment/image/", dataset_list=[], algorithm_list=[]
+        self,
+        path="./dataset/experiment/image/",
+        dataset_list=[],
+        algorithm_list=["dpc_iass"],
     ) -> None:
         """
         初始化相关成员
         Args:
             path (str, optional): 文件路径，由于调用该类的主程序路径待定，这里使用手动传入，同时根据该路径解析出保存路径. Defaults to "./dataset/experiment/image/".
             dataset_list (list, optional): 使用的数据集列表. Defaults to [].
-            algorithm_list (list, optional): 使用的算法列表. Defaults to [].
+            algorithm_list (str, optional): 使用的算法列表. Defaults to ["dpc_iass"].
         """
         """文件路径"""
         self.path = path
@@ -534,10 +537,10 @@ class RunImage:
         self.dataset_list = dataset_list
         if dataset_list == []:
             self.dataset_list = list(IMAGE_PARAMS.keys())
-        """使用的算法列表，为空，使用全部的算法(除了 DpcM。选项太多)"""
+        """使用的算法"""
         self.algorithm_list = algorithm_list
         if algorithm_list == []:
-            self.algorithm_list = ALGORITHM_LIST
+            self.algorithm_list = ["dpc_iass"]
 
     def deal_image(self):
         """
@@ -549,7 +552,7 @@ class RunImage:
         for data_name in self.dataset_list:
             """遍历数据集"""
             run_data_algorithm(
-                pool, IMAGE_PARAMS[data_name], self.algorithm_list, "rod"
+                pool, IMAGE_PARAMS[data_name], self.algorithm_list, "ckrod"
             )
 
         pool.close()

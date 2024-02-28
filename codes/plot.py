@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
+import random
 import matplotlib.pyplot as plt
 from sklearn.datasets import *
 from .analyze import *
 from matplotlib import rcParams
+from scipy.io import loadmat
 
 
 """
@@ -950,7 +952,7 @@ class PlotSynthesis:
 
         """保存图片"""
         plt.tight_layout()
-        plt.subplots_adjust(wspace=0, hspace=0.1)  
+        plt.subplots_adjust(wspace=0, hspace=0.1)
         plt.savefig(self.path + "plot/lw_dpc_deffect.pdf")
         plt.show()
 
@@ -1382,14 +1384,18 @@ class PlotUci:
 class PlotImage:
     """
     处理 Image 数据集相关的绘图
-    1. 主要是聚类结果展示
+    主要是聚类结果展示，由于图像数据集相对不多，且每个都需要展示，因此每个数据集一个函数方法
+    与之前相对不一样的是，需要根据得到的文件去获取标签以及原始数据，绘制部分结果
+    第一列是聚类中心对应的样本，其余列是部分结果
+    行数是数据集的标签类别数
     """
 
-    def __init__(self, save_path="./result/image/") -> None:
+    def __init__(self, save_path="./result/image/", dpc_algorithm="dpc_iass") -> None:
         """
         初始化相关成员
         Args:
             save_path (str, optional): 保存结果的路径. Defaults to "./result/image/".
+            dpc_algorithm (str, optional): 对比算法. Defaults to "dpc_iass".
         """
         """保存结果路径"""
         self.save_path = save_path
@@ -1399,6 +1405,269 @@ class PlotImage:
             "color": "black",
             "size": 16,
         }
+        """对比算法"""
+        self.dpc_algorithm = dpc_algorithm
+
+    def _show_image(self, data_name, file_name, col_num, row_num):
+        """
+        绘制一个数据集在特定参数下的多子像素图
+        Args:
+            data_name (_type_): _description_
+            file_name (_type_): _description_
+            col_num (_type_): _description_
+            row_num (_type_): _description_
+        """
+        """行数"""
+        row_num = min(IMAGE_PARAMS[data_name]["num"], row_num)
+        """特征个数"""
+        feature_num = IMAGE_PARAMS[data_name]["features_num"]
+        """根据文件加载聚类中心，标签"""
+        with open(
+            self.save_path
+            + "result/"
+            + data_name
+            + "/"
+            + self.dpc_algorithm
+            + "/"
+            + file_name
+        ) as f:
+            d = json.load(f)
+        """加载原始数据"""
+        raw_data = loadmat(self.save_path + "analyze/" + data_name + ".mat")["X"]
+
+        """获取预测标签，预测聚类中心"""
+        pred_label = d["label"]
+        pred_center = d["center"]
+        """转化为字典"""
+        pred_dict = {c: [] for c in pred_center}
+        for idx in range(len(pred_label)):
+            for c in pred_center:
+                if pred_label[c] == pred_label[idx]:
+                    pred_dict[c].append(idx)
+
+        fig, axes = plt.subplots(row_num, col_num, figsize=(col_num, row_num))
+
+        for i in range(row_num):
+            for j in range(col_num):
+                """绘制聚类中心"""
+                if j == 0:
+                    axes[i][j].imshow(
+                        numpy.rot90(
+                            raw_data[pred_center[i]].reshape(
+                                int(math.sqrt(feature_num)), int(math.sqrt(feature_num))
+                            ),
+                            k=3,
+                        )
+                    )
+                else:
+                    axes[i][j].imshow(
+                        numpy.rot90(
+                            raw_data[pred_dict[pred_center[i]][j]].reshape(
+                                int(math.sqrt(feature_num)), int(math.sqrt(feature_num))
+                            ),
+                            k=3,
+                        )
+                    )
+                axes[i][j].set_xticks(())
+                axes[i][j].set_yticks(())
+
+        plt.tight_layout()
+        plt.subplots_adjust(wspace=0, hspace=0)
+        plt.savefig("./result/image/plot/" + data_name + ".pdf", bbox_inches="tight")
+        plt.show()
+
+    def _show_mnist_test(self, data_name, file_name, col_num, row_num):
+        """
+        绘制一个数据集在特定参数下的多子像素图
+        Args:
+            data_name (_type_): _description_
+            file_name (_type_): _description_
+            col_num (_type_): _description_
+            row_num (_type_): _description_
+        """
+        """行数"""
+        row_num = min(IMAGE_PARAMS[data_name]["num"], row_num)
+        """特征个数"""
+        feature_num = IMAGE_PARAMS[data_name]["features_num"]
+        """加载原始数据"""
+        data = loadmat(self.save_path + "analyze/" + data_name + ".mat")
+        """获取数据，标签"""
+        raw_data = data["X"]
+        raw_label = list(data["Y"][:, 0])
+        list_set_label = list(set(raw_label))
+        center_dict = {c: [] for c in list_set_label}
+        for idx in range(len(raw_label)):
+            for c in list_set_label:
+                if c == raw_label[idx]:
+                    center_dict[c].append(idx)
+        """"""
+        plot_center_dict = {c: [] for c in list_set_label}
+        for k, v in center_dict.items():
+            plot_center_dict[k] = random.sample(v, col_num)
+
+        fig, axes = plt.subplots(row_num, col_num, figsize=(col_num, row_num))
+
+        for i in range(row_num):
+            for j in range(col_num):
+                if j == 0:
+                    """聚类中心"""
+                    axes[i][j].imshow(
+                        numpy.rot90(
+                            raw_data[plot_center_dict[list_set_label[i]][j]].reshape(
+                                int(math.sqrt(feature_num)), int(math.sqrt(feature_num))
+                            ),
+                            k=4,
+                        ),
+                        cmap="gray",
+                    )
+                else:
+                    """其他样本"""
+                    axes[i][j].imshow(
+                        numpy.rot90(
+                            raw_data[plot_center_dict[list_set_label[i]][j]].reshape(
+                                int(math.sqrt(feature_num)), int(math.sqrt(feature_num))
+                            ),
+                            k=4,
+                        ),
+                        cmap="gray",
+                    )
+
+                axes[i][j].set_xticks(())
+                axes[i][j].set_yticks(())
+
+        plt.tight_layout()
+        plt.subplots_adjust(wspace=0, hspace=0)
+        plt.savefig("./result/image/plot/" + data_name + ".pdf", bbox_inches="tight")
+        plt.show()
+
+    def _show_usps(self, data_name, file_name, col_num, row_num):
+        """
+        绘制一个数据集在特定参数下的多子像素图
+        Args:
+            data_name (_type_): _description_
+            file_name (_type_): _description_
+            col_num (_type_): _description_
+            row_num (_type_): _description_
+        """
+        """行数"""
+        row_num = min(IMAGE_PARAMS[data_name]["num"], row_num)
+        """特征个数"""
+        feature_num = IMAGE_PARAMS[data_name]["features_num"]
+        """加载原始数据"""
+        data = loadmat(self.save_path + "analyze/" + data_name + ".mat")
+        """获取数据，标签"""
+        raw_data = data["X"]
+        raw_label = list(data["Y"][:, 0])
+        list_set_label = list(set(raw_label))
+        center_dict = {c: [] for c in list_set_label}
+        for idx in range(len(raw_label)):
+            for c in list_set_label:
+                if c == raw_label[idx]:
+                    center_dict[c].append(idx)
+        """"""
+        plot_center_dict = {c: [] for c in list_set_label}
+        for k, v in center_dict.items():
+            plot_center_dict[k] = random.sample(v, col_num)
+            print(k, plot_center_dict[k])
+            
+        fig, axes = plt.subplots(row_num, col_num, figsize=(col_num, row_num))
+
+        for i in range(row_num):
+            for j in range(col_num):
+                if j == 0:
+                    """聚类中心"""
+                    axes[i][j].imshow(
+                        numpy.rot90(
+                            numpy.flipud(
+                                raw_data[
+                                    plot_center_dict[list_set_label[i]][j]
+                                ].reshape(
+                                    int(math.sqrt(feature_num)),
+                                    int(math.sqrt(feature_num)),
+                                ),
+                            ),
+                            k=-1,
+                        ),
+                        cmap="gray",
+                    )
+                else:
+                    """其他样本"""
+                    axes[i][j].imshow(
+                        numpy.rot90(
+                            numpy.flipud(
+                                raw_data[
+                                    plot_center_dict[list_set_label[i]][j]
+                                ].reshape(
+                                    int(math.sqrt(feature_num)),
+                                    int(math.sqrt(feature_num)),
+                                ),
+                            ),
+                            k=-1,
+                        ),
+                        cmap="gray",
+                    )
+
+                axes[i][j].set_xticks(())
+                axes[i][j].set_yticks(())
+
+        plt.tight_layout()
+        plt.subplots_adjust(wspace=0, hspace=0)
+        plt.savefig("./result/image/plot/" + data_name + ".pdf", bbox_inches="tight")
+        plt.show()
+
+    def show_coil20(self):
+        """
+        展示 coil20 数据集聚类结果，对应第三章的图
+        """
+        """coil20 数据集"""
+        data_name = "coil20"
+        """要画多少列，包括聚类中心"""
+        col_num = 17
+        """指定文件名"""
+        file_name = "dem_1__k_34__mu_29.json"
+
+        self._show_image(data_name, file_name, col_num, 10)
+
+    def show_jaffe(self):
+        """
+        展示 jaffe 数据集聚类结果，对应第三章的图
+        """
+        """jaffe 数据集"""
+        data_name = "jaffe"
+        """要画多少列，包括聚类中心"""
+        col_num = 16
+        """指定文件名"""
+        file_name = "dem_0__k_23__mu_30.json"
+
+        self._show_image(data_name, file_name, col_num, IMAGE_PARAMS[data_name]["num"])
+
+    def show_mnist_test(self):
+        """
+        展示 mnist_test 数据集聚类结果，对应第三章的图
+        """
+        """mnist_test 数据集"""
+        data_name = "MNIST_test"
+        """要画多少列，包括聚类中心"""
+        col_num = 21
+        """指定文件名"""
+        file_name = ""
+
+        self._show_mnist_test(
+            data_name, file_name, col_num, IMAGE_PARAMS[data_name]["num"]
+        )
+
+    def show_usps(self):
+        """
+        展示 usps 数据集聚类结果，对应第三章的图
+        """
+        """usps 数据集"""
+        data_name = "usps"
+        """要画多少列，包括聚类中心"""
+        col_num = 23
+        """指定文件名"""
+        file_name = ""
+
+        self._show_usps(data_name, file_name, col_num, IMAGE_PARAMS[data_name]["num"])
 
 
 class MyPlot:

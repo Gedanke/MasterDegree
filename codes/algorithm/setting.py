@@ -267,7 +267,36 @@ UCI_PATAMS = {
     },
 }
 """图片数据集"""
-IMAGE_PARAMS = {}
+IMAGE_PARAMS = {
+    "coil20": {
+        "path": "./dataset/experiment/image/coil20/coil20.csv",
+        "save_path": "./result/image/",
+        "samples_num": 1440,
+        "features_num": 16384,
+        "num": 20,
+    },
+    "jaffe": {
+        "path": "./dataset/experiment/image/jaffe/jaffe.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 213,
+        "features_num": 65536,
+        "num": 10,
+    },
+    "MNIST_test": {
+        "path": "./dataset/experiment/image/MNIST_test/MNIST_test.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 10000,
+        "features_num": 784,
+        "num": 10,
+    },
+    "usps": {
+        "path": "./dataset/experiment/image/usps/usps.csv",
+        "save_path": "./result/uci/",
+        "samples_num": 11000,
+        "features_num": 256,
+        "num": 10,
+    },
+}
 """
 一些公用的函数
 """
