@@ -23,20 +23,20 @@
   * [conf.json](./codes/conf.json) 不同算法在不同数据集上的结果记录
 * [dataset](dataset) 数据块
   * [raw](dataset/raw) 原始数据
-    * [demo](dataset/raw/demo/)
-    * [synthesis](dataset/raw/synthesis/)：人工合成数据集，以二维为主，结构相对简单，易于作图
-    * [uci](dataset/raw/uci)
-    * [image](dataset/raw/image/)
+    * [demo](dataset/raw/demo/)：python 生成的数据集
+    * [synthesis](dataset/raw/synthesis/)：合成数据集
+    * [uci](dataset/raw/uci)：UCI 数据集
+    * [image](dataset/raw/image/)：图像数据集
   * [data](dataset/data) 预处理完成后的数据
-    * [demo](dataset/data/demo/)
-    * [synthesis](dataset/data/synthesis/)
-    * [uci](dataset/data/uci)
-    * [image](dataset/data/image/)
+    * [demo](dataset/data/demo/)：同上
+    * [synthesis](dataset/data/synthesis/)：同上
+    * [uci](dataset/data/uci)：同上
+    * [image](dataset/data/image/)：同上
   * [experiment](dataset/experiment/) 实验需要用的数据，从 [data](dataset/data/) 中提取，加入了相关参数；如果不加，直接复制过来
-    * [demo](dataset/experiment/demo/)
-    * [synthesis](dataset/experiment/synthesis/)
-    * [uci](dataset/experiment/uci)
-    * [image](dataset/experiment/image/)
+    * [demo](dataset/experiment/demo/)：同上
+    * [synthesis](dataset/experiment/synthesis/)：同上
+    * [uci](dataset/experiment/uci)：同上
+    * [image](dataset/experiment/image/)：同上
 * [result](result) 结果块，均以 pandas.DataFrame 形式存放，以追加的形式增加到现有数据中
   * [demo](result/demo) 结构同下
   * [mnist](result/mnist) 结构同下
