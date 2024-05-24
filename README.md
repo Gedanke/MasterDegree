@@ -73,10 +73,21 @@ MNIST-test
 Fashion
 Letter
 
+Agg
+dpc_ckrod
+723,
+189,
+554,
+59,
+445,
+768,
+613
+
+https://blog.csdn.net/nan355655600/article/details/117337046
+
 https://github.com/gagolews/clustering-data-v0
 
 https://clustering-benchmarks.gagolewski.com/
-
 
 ## UCI 数据集
 

@@ -1,8 +1,0 @@
-n_entradas= 57
-n_clases= 2
-n_arquivos= 1
-fich1= spambase_R.dat
-n_patrons1= 4601
-n_patrons_entrena= 2301
-n_patrons_valida= 2300
-n_conxuntos= 1

@@ -351,7 +351,7 @@ class ComKMeans(ComBase):
             self.algorithm_name = "miniBatchKMeans"
         else:
             """使用 KMeans"""
-            algorithm = KMeans(n_clusters=self.num)
+            algorithm = KMeans(n_clusters=self.num, n_init="auto")
             """确定文件名"""
             self.algorithm_name = "kmeans"
 

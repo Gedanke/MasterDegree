@@ -1,8 +1,0 @@
-n_entradas= 7
-n_clases= 3
-n_arquivos= 1
-fich1= seeds_R.dat
-n_patrons1= 210
-n_patrons_entrena= 105
-n_patrons_valida= 105
-n_conxuntos= 1

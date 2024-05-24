@@ -1,8 +1,0 @@
-n_entradas= 20
-n_clases= 2
-n_arquivos= 1
-fich1= twonorm_R.dat
-n_patrons1= 7400
-n_patrons_entrena= 3700
-n_patrons_valida= 3700
-n_conxuntos= 1

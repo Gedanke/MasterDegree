@@ -1,1 +1,0 @@
-{"ACC": [-1], "AMI": [0.37218], "ARI": [0.138637], "NMI": [0.391509], "FMI": [0.314453], "FILE_NAME": ["ap.json"], "cluster_acc": -1, "adjusted_mutual_info": 0.37218, "adjusted_rand_index": 0.138637, "fowlkes_mallows_index": 0.314453, "normalized_mutual_info": 0.391509, "file_name": "ap.json"}

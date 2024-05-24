@@ -1,1 +1,0 @@
-{"ACC": [0.882038], "AMI": [0.526413], "ARI": [0.576667], "NMI": [0.527449], "FMI": [0.819968], "FILE_NAME": ["kmeans.json"], "cluster_acc": 0.882038, "adjusted_mutual_info": 0.526413, "adjusted_rand_index": 0.576667, "fowlkes_mallows_index": 0.819968, "normalized_mutual_info": 0.527449, "file_name": "kmeans.json"}

@@ -1,8 +1,0 @@
-n_entradas= 22
-n_clases= 2
-n_arquivos= 1
-fich1= parkinsons_R.dat
-n_patrons1= 195
-n_patrons_entrena= 98
-n_patrons_valida= 97
-n_conxuntos= 1

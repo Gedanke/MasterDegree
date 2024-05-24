@@ -1,8 +1,0 @@
-n_entradas= 8
-n_clases= 3
-n_arquivos= 1
-fich1= abalone_R.dat
-n_patrons1= 4177
-n_patrons_entrena= 2089
-n_patrons_valida= 2088
-n_conxuntos= 1

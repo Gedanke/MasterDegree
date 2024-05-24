@@ -7,6 +7,7 @@ from sklearn.datasets import *
 from .analyze import *
 from matplotlib import rcParams
 from scipy.io import loadmat
+from sklearn.manifold import TSNE
 
 
 """
@@ -22,7 +23,7 @@ PLOT_TITLE = {
     "dpc": "DPC",
     "dpc_knn": "DPC-KNN",
     "snn_dpc": "SNN-DPC",
-    "dpc_ckrod": "Dpc-Ckrod",
+    "dpc_ckrod": "Dpc+Ckrod",
     "dpc_irho": "LW-DPC",
     "dpc_iass": "DPC-TSA",
 }
@@ -37,6 +38,9 @@ PLOT_TITLE_NUM = [
     "(h) ",
     "(i) ",
 ]
+"""坐标轴字体大小"""
+LABEL_FONT_SIZE = 16
+SEED_NUM = 9
 
 
 class PlotDemo:
@@ -98,7 +102,7 @@ class PlotDemo:
         self.font = {
             "family": "Times New Roman",
             "color": "black",
-            "size": 16,
+            "size": 32,
         }
 
     def show_moons(self):
@@ -112,6 +116,7 @@ class PlotDemo:
         ]
         """label"""
         label = numpy.array(pandas.read_csv(path_list[0]))[:, -1]
+        self.font["size"] = 28
 
         for dis_name in DIS_METHOD:
             file_path = (
@@ -132,8 +137,9 @@ class PlotDemo:
             os.mkdir(self.save_path + "moons/")
 
         """绘图"""
-        fig, axes = plt.subplots(3, 3, figsize=(18, 18))
-        numpy.random.seed(10)
+        fig, axes = plt.subplots(3, 3, figsize=(18, 19))
+        numpy.random.seed(SEED_NUM)
+        self.font["size"] = 26
 
         for i in range(3):
             for j in range(3):
@@ -150,12 +156,14 @@ class PlotDemo:
                 )
                 axes[i][j].axis("off")
                 axes[i][j].set_title(
-                    PLOT_TITLE_NUM[i * 3 + j] + self.moons_title_list[i * 3 + j],
+                    PLOT_TITLE_NUM[i * 3 + j],
                     self.font,
                     y=-0.1,
                 )
 
-        plt.tight_layout()
+        """保存结果"""
+        plt.subplots_adjust(wspace=0, hspace=0.2)
+        # plt.tight_layout()
         plt.savefig(
             self.save_path
             + "moons/num_"
@@ -175,8 +183,10 @@ class PlotDemo:
         if not os.path.isdir(self.save_path + "circles/"):
             os.mkdir(self.save_path + "circles/")
 
+        self.font["size"] = 26
+
         """绘图"""
-        fig, axes = plt.subplots(6, 6, figsize=(18, 18))
+        fig, axes = plt.subplots(7, 6, figsize=(18, 21))
 
         for i in range(len(self.params["circles"]["noise"])):
             """不同噪声级别"""
@@ -232,19 +242,26 @@ class PlotDemo:
                 axes[i][j].set_yticks([])
 
                 if i == 5:
-                    axes[5][j].set_xlabel(
-                        self.cicrles_title_list[j], fontdict=self.font
-                    )
+                    axes[5][j].set_xlabel(PLOT_TITLE_NUM[j], fontdict=self.font)
                 if j == 0:
                     axes[i][0].set_ylabel(
                         # "Noise level = "
                         str("{:.2f}".format(self.params["circles"]["noise"][i]))
                         + "        ",
                         rotation=0,
-                        fontdict=self.font,
+                        position=(0, 0.1),
+                        fontdict={
+                            "family": "Times New Roman",
+                            "color": "black",
+                            "size": 24,
+                        },
                     )
+                    # label = axes[i][0].get_ylabel()
+                    # text = axes[i][0].yaxis.get_offset_text()
+                    # text.set_position((-0.1,0))
 
-        plt.tight_layout()
+        plt.subplots_adjust(wspace=0, hspace=0)
+        # plt.tight_layout()
         plt.savefig(
             self.save_path
             + "circles/num_"
@@ -307,7 +324,8 @@ def _show_data_algorithm(plot, path, data_name, algorithm_name, pred_result_file
     """聚类结果字典"""
     cluster_points = dict()
     colors = dict()
-    numpy.random.seed(1)
+    """12"""
+    numpy.random.seed(SEED_NUM)
 
     for k, v in cluster_result.items():
         """同一类中的点"""
@@ -325,27 +343,38 @@ def _show_data_algorithm(plot, path, data_name, algorithm_name, pred_result_file
     """绘图"""
     idx = 0
     for k, v in cluster_points.items():
-        plot.scatter(v.loc[:, col[0]], v.loc[:, col[1]], c=colors[k], s=4, marker=".")
+        plot.scatter(v.loc[:, col[0]], v.loc[:, col[1]], c=colors[k], s=64, marker=".")
         if len(center) != 0:
-            plot.scatter(center[idx, 0], center[idx, 1], c=colors[k], s=256, marker="*")
+            plot.scatter(
+                center[idx, 0], center[idx, 1], c=colors[k], s=1024, marker="*"
+            )
             idx += 1
 
     """图像设置"""
-    font = {
-        "family": "Times New Roman",
-    }
+    font = {"family": "Times New Roman", "size": 22}
+    """绘制聚类结果图"""
+    plot.get_figure().subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.1)
+    plot.axis("off")
     plot.spines["right"].set_color("none")
     plot.spines["top"].set_color("none")
-    plot.set_xlim(0, 1.03)
-    plot.set_ylim(0, 1.03)
-    plot.set_xticks(numpy.linspace(0, 1, 11))
-    plot.set_yticks(numpy.linspace(0, 1, 11))
+    plot.set_xlim(-0.03, 1.03)
+    plot.set_ylim(-0.03, 1.03)
+    plot.set_xticks(())
+    plot.set_yticks(())
     plot.set_aspect(1)
-    # plot.grid(linestyle="-", linewidth=0.3)
-    plot.set_xlabel("X")
-    plot.set_ylabel("Y")
-    if algorithm_name in PLOT_TITLE.keys():
-        plot.set_title(PLOT_TITLE[algorithm_name], font)
+    plot.grid(linestyle="-", linewidth=0.1)
+    """聚类过程"""
+    # plot.get_figure().subplots_adjust(left=0.1, right=0.95, top=1, bottom=0)
+    # plot.spines["right"].set_color("none")
+    # plot.spines["top"].set_color("none")
+    # plot.set_xlim(0.0, 1.03)
+    # plot.set_ylim(0.0, 1.03)
+    # plot.set_xticks(numpy.linspace(0, 1, 11))
+    # plot.set_yticks(numpy.linspace(0, 1, 11))
+    # plot.set_aspect(1)
+    # plot.grid(linestyle="-", linewidth=0.2)
+    # plot.set_xlabel("X", fontsize=LABEL_FONT_SIZE)
+    # plot.set_ylabel("Y", fontsize=LABEL_FONT_SIZE)
 
 
 def _show_data(plot, path, data_name):
@@ -372,7 +401,7 @@ def _show_data(plot, path, data_name):
     """聚类结果字典"""
     cluster_points = dict()
     colors = dict()
-    numpy.random.seed(6)
+    numpy.random.seed(SEED_NUM)
 
     for k, v in cluster_result.items():
         """同一类中的点"""
@@ -382,14 +411,15 @@ def _show_data(plot, path, data_name):
     """绘图"""
     idx = 0
     for k, v in cluster_points.items():
-        plot.scatter(v.loc[:, col[0]], v.loc[:, col[1]], c=colors[k], s=15, marker=".")
+        plot.scatter(v.loc[:, col[0]], v.loc[:, col[1]], c=colors[k], s=32, marker=".")
         idx += 1
 
     """图像设置"""
     font = {
         "family": "Times New Roman",
+        "size": 22,
     }
-
+    plot.get_figure().subplots_adjust(left=0.1, right=0.95, top=1, bottom=0)
     plot.spines["right"].set_color("none")
     plot.spines["top"].set_color("none")
     plot.set_xlim(0, 1.03)
@@ -397,9 +427,9 @@ def _show_data(plot, path, data_name):
     plot.set_xticks(numpy.linspace(0, 1, 11))
     plot.set_yticks(numpy.linspace(0, 1, 11))
     plot.set_aspect(1)
-    plot.grid(linestyle="-", linewidth=0.5)
-    plot.set_xlabel("X")
-    plot.set_ylabel("Y")
+    plot.grid(linestyle="-", linewidth=0.2)
+    plot.set_xlabel("X", fontsize=LABEL_FONT_SIZE)
+    plot.set_ylabel("Y", fontsize=LABEL_FONT_SIZE)
     plot.set_title(data_name, font)
 
 
@@ -422,18 +452,17 @@ class PlotSynthesis:
         self.font = {
             "family": "Times New Roman",
             "color": "black",
-            "size": 16,
+            "size": 24,
         }
         """数据列表"""
         self.dataset_list = [
-            # "aggregation",
-            # "compound",
-            # "D31",
-            # "flame",
+            "aggregation",
+            "compound",
+            "D31",
+            "flame",
             "jain",
-            # "pathbased",
-            # "R15",
-            # "S2",
+            "R15",
+            "S2",
             "spiral",
         ]
         """算法列表"""
@@ -545,7 +574,7 @@ class PlotSynthesis:
 
         """绘图"""
         colors = dict()
-        numpy.random.seed(1)
+        numpy.random.seed(SEED_NUM)
 
         """根据聚类结果拆分数据，得到一个字典，键为类别，值为归属该类的样本索引"""
         al_cluster_result = dict()
@@ -569,7 +598,7 @@ class PlotSynthesis:
             axes[0].spines["top"].set_color("none")
             axes[0].set_xlim(0, len(al_label) * 1.1)
             axes[0].set_ylim(0, max(rho) * 1.1)
-            axes[0].grid(linestyle="-", linewidth=0.5)
+            axes[0].grid(linestyle="-", linewidth=0.2)
             axes[0].set_xlabel("num")
             axes[0].set_ylabel(r"$\rho$")
 
@@ -606,7 +635,7 @@ class PlotSynthesis:
             axes[1].set_xticks(numpy.linspace(0, 1, 11))
             axes[1].set_yticks(numpy.linspace(0, 1, 11))
             axes[1].set_aspect(1)
-            axes[1].grid(linestyle="-", linewidth=0.5)
+            axes[1].grid(linestyle="-", linewidth=0.2)
             axes[1].set_xlabel("X")
             axes[1].set_ylabel("Y")
 
@@ -648,7 +677,7 @@ class PlotSynthesis:
 
         """绘图"""
         colors = dict()
-        numpy.random.seed(6)
+        numpy.random.seed(SEED_NUM)
 
         """根据聚类结果拆分数据，得到一个字典，键为类别，值为归属该类的样本索引"""
         al_cluster_result = dict()
@@ -664,49 +693,39 @@ class PlotSynthesis:
             """图像设置"""
             plot.spines["right"].set_color("none")
             plot.spines["top"].set_color("none")
-            self.font["size"] = 16
+            # self.font["size"] = 16
 
             """判断绘图类型"""
             if plot_type == "rho":
                 """局部密度"""
-                plot.scatter(v, rho[v], c=colors[k], s=15, marker=".")
+                plot.scatter(v, rho[v], c=colors[k], s=32, marker=".")
                 plot.scatter(
                     al_center[index],
                     rho[al_center[index]],
                     c=colors[k],
-                    s=256,
+                    s=512,
                     marker="*",
                 )
                 """x 轴，点的个数"""
                 plot.set_xlim(0, len(al_label) * 1.1)
                 plot.set_ylim(0, max(rho) * 1.1)
-                plot.set_xlabel("num")
-                plot.set_ylabel(r"$\rho$")
-
-                if algorithm_name == "dpc":
-                    plot.set_title(r"$\rho$ value of DPC", self.font, y=-0.15)
-                else:
-                    plot.set_title(r"$\rho$ value of LW-DPC", self.font, y=-0.15)
+                plot.set_xlabel("num", fontsize=LABEL_FONT_SIZE)
+                plot.set_ylabel(r"$\rho$", fontsize=LABEL_FONT_SIZE)
 
             elif plot_type == "delta":
                 """相对距离"""
-                plot.scatter(v, delta[v], c=colors[k], s=15, marker=".")
+                plot.scatter(v, delta[v], c=colors[k], s=32, marker=".")
                 plot.scatter(
                     al_center[index],
                     delta[al_center[index]],
                     c=colors[k],
-                    s=256,
+                    s=512,
                     marker="*",
                 )
                 plot.set_xlim(0, len(al_label) * 1.1)
                 plot.set_ylim(0, max(delta) * 1.1)
-                plot.set_xlabel("num")
-                plot.set_ylabel(r"$\delta$")
-
-                if algorithm_name == "dpc":
-                    plot.set_title(r"$\delta$ value of DPC", self.font, y=-0.15)
-                else:
-                    plot.set_title(r"$\delta$ value of LW-DPC", self.font, y=-0.15)
+                plot.set_xlabel("num", fontsize=LABEL_FONT_SIZE)
+                plot.set_ylabel(r"$\delta$", fontsize=LABEL_FONT_SIZE)
 
             elif plot_type == "dot":
                 """局部密度 x 相对距离，记作 dot"""
@@ -715,78 +734,68 @@ class PlotSynthesis:
                     rho[al_center[index]],
                     delta[al_center[index]],
                     c=colors[k],
-                    s=256,
+                    s=512,
                     marker="*",
                 )
                 plot.set_xlim(0, max(rho) * 1.1)
                 plot.set_ylim(0, max(delta) * 1.1)
-                plot.set_xlabel(r"$\rho$")
-                plot.set_ylabel(r"$\delta$")
-
-                if algorithm_name == "dpc":
-                    plot.set_title(
-                        r"$\rho$ and $\delta$ value of DPC", self.font, y=-0.15
-                    )
-                else:
-                    plot.set_title(
-                        r"$\rho$ and $\delta$ value of LW-DPC", self.font, y=-0.15
-                    )
+                plot.set_xlabel(r"$\rho$", fontsize=LABEL_FONT_SIZE)
+                plot.set_ylabel(r"$\delta$", fontsize=LABEL_FONT_SIZE)
 
             elif plot_type == "gamma":
                 """决策值"""
-                plot.scatter(v, gamma[v], c=colors[k], s=15, marker=".")
+                plot.scatter(v, gamma[v], c=colors[k], s=32, marker=".")
                 plot.scatter(
                     al_center[index],
                     gamma[al_center[index]],
                     c=colors[k],
-                    s=256,
+                    s=512,
                     marker="*",
                 )
                 plot.set_xlim(0, len(al_label) * 1.1)
                 plot.set_ylim(0, max(gamma) * 1.1)
-                plot.set_xlabel("num")
-                plot.set_ylabel(r"$\gamma$")
+                plot.set_xlabel("num", fontsize=LABEL_FONT_SIZE)
+                plot.set_ylabel(r"$\gamma$", fontsize=LABEL_FONT_SIZE)
 
-                if algorithm_name == "dpc":
-                    plot.set_title(r"$\gamma$ value of DPC", self.font, y=-0.15)
-                else:
-                    plot.set_title(r"$\gamma$ value of LW-DPC", self.font, y=-0.15)
-
-            plot.grid(linestyle="-", linewidth=0.5)
+            plot.get_figure().subplots_adjust(left=0.1, right=0.95, top=1, bottom=0)
+            plot.grid(linestyle="-", linewidth=0.1)
             index += 1
 
     def show_dpc_process(self):
         """
-        展示 DPC 聚类算法的过程，2 x 3，对应图 2-1
+        展示 DPC 聚类算法的过程，3 x 2，对应图 2-2
         (原始数据，局部密度，相对聚类
         局部密度 x 相对距离，决策值，聚类结果)
         数据集暂定为 Aggregation
         """
         """数据集名称"""
         data_name = "aggregation"
+        self.font["size"] = 24
 
         """2 x 3 的格式"""
-        fig, axes = plt.subplots(2, 3, figsize=(18, 12))
+        fig, axes = plt.subplots(3, 2, figsize=(12, 19))
+
         """(0,0)，原始数据"""
         _show_data(axes[0][0], self.path, data_name)
-        axes[0][0].set_title("(a) " + data_name.capitalize(), self.font, y=-0.15)
+        axes[0][0].set_title("(a)", self.font, y=-0.16)
         """(0,1)，局部密度"""
         self.plot_rho(axes[0][1], data_name, "dpc", "rho")
-        axes[0][1].set_title(r"(b) $\rho$ value of DPC", self.font, y=-0.15)
-        """(0,2)，相对距离"""
-        self.plot_rho(axes[0][2], data_name, "dpc", "delta")
-        axes[0][2].set_title(r"(c) $\delta$ value of DPC", self.font, y=-0.15)
-        """(1,0)，局部密度与相对距离"""
-        self.plot_rho(axes[1][0], data_name, "dpc", "dot")
-        axes[1][0].set_title(r"(d) $\rho$ $\times$ $\delta$ of DPC", self.font, y=-0.15)
-        """(1,1)，gamma"""
-        self.plot_rho(axes[1][1], data_name, "dpc", "gamma")
-        axes[1][1].set_title(r"(e) $\gamma$ value of DPC", self.font, y=-0.15)
-        """(1,2)，聚类结果"""
-        _show_data_algorithm(axes[1][2], self.path, data_name, "dpc")
-        axes[1][2].set_title(r"(f) Clustering result of DPC", self.font, y=-0.15)
+        axes[0][1].set_title("(b)", self.font, y=-0.16)
+        """(1,0)，相对距离"""
+        self.plot_rho(axes[1][0], data_name, "dpc", "delta")
+        axes[1][0].set_title("(c)", self.font, y=-0.16)
+        """(1,1)，局部密度与相对距离"""
+        self.plot_rho(axes[1][1], data_name, "dpc", "dot")
+        axes[1][1].set_title("(d)", self.font, y=-0.16)
+        """(2,0)，gamma"""
+        self.plot_rho(axes[2][0], data_name, "dpc", "gamma")
+        axes[2][0].set_title("(e)", self.font, y=-0.16)
+        """(2,1)，聚类结果"""
+        _show_data_algorithm(axes[2][1], self.path, data_name, "dpc")
+        axes[2][1].set_title("(f)", self.font, y=-0.16)
 
         """保存图片"""
+        plt.subplots_adjust(wspace=0, hspace=0.3)
         plt.tight_layout()
         plt.savefig(
             self.path + "plot/DPC在" + data_name + "上的聚类过程.pdf",
@@ -796,36 +805,44 @@ class PlotSynthesis:
 
     def show_dpc_compare(self):
         """
-        DPC 对比其他算法 2 x 2，对应图 2-2
+        DPC 对比其他算法 3 x 2，对应图 2-3
         数据集暂定为 spiral
         """
         """数据集名称"""
         data_name = "spiral"
+        self.font["size"] = 24
 
-        """2 x 2 的格式"""
-        fig, axes = plt.subplots(2, 2, figsize=(12, 12))
-        tmp_algorithm_list = ["kmeans", "optics", "spectralClustering", "dpc"]
-        for i in range(2):
+        """3 x 2 的格式"""
+        fig, axes = plt.subplots(3, 2, figsize=(12, 18))
+        tmp_algorithm_list = [
+            "agglomerativeClustering",
+            "kmeans",
+            "dbscan",
+            "optics",
+            "spectralClustering",
+            "dpc",
+        ]
+        for i in range(3):
             for j in range(2):
                 """绘图"""
                 _show_data_algorithm(
                     axes[i][j], self.path, data_name, tmp_algorithm_list[i * 2 + j]
                 )
                 axes[i][j].set_title(
-                    PLOT_TITLE_NUM[i * 2 + j]
-                    + PLOT_TITLE[tmp_algorithm_list[i * 2 + j]],
+                    PLOT_TITLE_NUM[i * 2 + j],
                     self.font,
-                    y=-0.15,
+                    y=-0.08,
                 )
 
         """保存图片"""
+        plt.subplots_adjust(wspace=0, hspace=0.3)
         plt.tight_layout()
         plt.savefig(self.path + "plot/DPC_" + data_name + ".pdf", bbox_inches="tight")
         plt.show()
 
     def show_distance_compare(self):
         """
-        不同样本相似性度量对 DPC 的聚类结果的影响(影响大与不大的都放一张图里面)，2 x 3，对应图 2-3
+        不同样本相似性度量对 DPC 的聚类结果的影响(影响大与不大的都放一张图里面)，3 x 2，对应图 2-4
         数据集暂定为 D31
         """
         data_name = "D31"
@@ -837,25 +854,25 @@ class PlotSynthesis:
             "jaccard",
             "mahalanobis",
         ]
+        self.font["size"] = 24
 
         """2 x 3 的格式"""
-        fig, axes = plt.subplots(2, 3, figsize=(18, 13))
+        fig, axes = plt.subplots(3, 2, figsize=(12, 19))
 
-        for i in range(2):
-            for j in range(3):
+        for i in range(3):
+            for j in range(2):
                 """绘图"""
                 _show_data_algorithm(
-                    axes[i][j], self.path, data_name, "dpc_" + distance_list[i * 3 + j]
+                    axes[i][j], self.path, data_name, "dpc_" + distance_list[i * 2 + j]
                 )
                 axes[i][j].set_title(
-                    PLOT_TITLE_NUM[i * 3 + j]
-                    + " DPC with "
-                    + distance_list[i * 3 + j].capitalize(),
+                    PLOT_TITLE_NUM[i * 2 + j],
                     self.font,
-                    y=-0.15,
+                    y=-0.05,
                 )
 
         """保存图片"""
+        plt.subplots_adjust(wspace=1, hspace=1)
         plt.tight_layout()
         plt.savefig(
             self.path + "plot/DPC_distance_" + data_name + ".pdf", bbox_inches="tight"
@@ -864,16 +881,16 @@ class PlotSynthesis:
 
     def show_percent_compare(self):
         """
-        不同百分比数对 DPC 的聚类结果的影响，2 x 3，对应图 2-4
+        不同百分比数对 DPC 的聚类结果的影响，3 x 2，对应图 2-5
         数据集暂定为 Flame
         """
         data_name = "flame"
-        percent_list = [0.5, 1.5, 2.5, 3.0]
-
+        percent_list = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+        self.font["size"] = 18
         """2 x 2 的格式"""
-        fig, axes = plt.subplots(2, 2, figsize=(12, 13))
+        fig, axes = plt.subplots(3, 2, figsize=(12, 13))
 
-        for i in range(2):
+        for i in range(3):
             for j in range(2):
                 """绘图"""
                 _show_data_algorithm(
@@ -886,14 +903,13 @@ class PlotSynthesis:
                     + "__dcm_1__rhom_0__dem_0.json",
                 )
                 axes[i][j].set_title(
-                    PLOT_TITLE_NUM[i * 2 + j]
-                    + " DPC with percent = "
-                    + str(percent_list[i * 2 + j]),
+                    PLOT_TITLE_NUM[i * 2 + j],
                     self.font,
-                    y=-0.15,
+                    y=-0.1,
                 )
 
         """保存图片"""
+        plt.subplots_adjust(wspace=0, hspace=0.3)
         plt.tight_layout()
         plt.savefig(
             self.path + "plot/DPC_percent_" + data_name + ".pdf", bbox_inches="tight"
@@ -906,19 +922,21 @@ class PlotSynthesis:
         改进局部密度的 DPC 算法与经典 DPC 算法在局部密度与聚类结果的对比图，2 x 2，对应图 3-2
         """
         data_name = "jain"
-        fig, axes = plt.subplots(2, 2, figsize=(12, 12))
+        fig, axes = plt.subplots(2, 2, figsize=(12, 13))
+        self.font["size"] = 20
 
         self.plot_rho(axes[0][0], data_name, "dpc", "rho")
-        axes[0][0].set_title(r"(a) $\rho$ value of DPC", self.font, y=-0.15)
+        axes[0][0].set_title(r"(a)", self.font, y=-0.16)
         _show_data_algorithm(axes[0][1], self.path, data_name, "dpc")
-        axes[0][1].set_title(r"(b) Clustering result of DPC", self.font, y=-0.15)
+        axes[0][1].set_title(r"(b)", self.font, y=-0.175)
 
         self.plot_rho(axes[1][0], data_name, "dpc_irho", "rho")
-        axes[1][0].set_title(r"(c) $\rho$ value of LW-DPC", self.font, y=-0.15)
+        axes[1][0].set_title(r"(c)", self.font, y=-0.16)
         _show_data_algorithm(axes[1][1], self.path, data_name, "dpc_irho")
-        axes[1][1].set_title(r"(d) Clustering result of LW-DPC", self.font, y=-0.15)
+        axes[1][1].set_title(r"(d)", self.font, y=-0.175)
 
         """保存图片"""
+        plt.subplots_adjust(wspace=0, hspace=0.2)
         plt.tight_layout()
         plt.savefig(self.path + "plot/改进局部密度对比.pdf", bbox_inches="tight")
         plt.show()
@@ -930,8 +948,9 @@ class PlotSynthesis:
         """
         """数据集，算法为 DPC，KNN-DPC，SNN-DPC，LW-DPC"""
         data_name = "D31"
+        self.font["size"] = 20
 
-        fig, axes = plt.subplots(2, 2, figsize=(18, 18))
+        fig, axes = plt.subplots(2, 2, figsize=(12, 12))
         acc_list = ["0.9690", "0.9710", "0.9761", "0.9706"]
 
         for i in range(2):
@@ -941,19 +960,245 @@ class PlotSynthesis:
                     axes[i][j], self.path, data_name, self.algorithm_list[5 + i * 2 + j]
                 )
                 axes[i][j].set_title(
-                    PLOT_TITLE_NUM[i * 2 + j]
-                    + PLOT_TITLE[self.algorithm_list[5 + 2 * i + j]]
-                    + "(ACC = "
-                    + acc_list[i * 2 + j]
-                    + ")",
+                    PLOT_TITLE_NUM[i * 2 + j],
                     self.font,
-                    y=-0.1,
+                    y=-0.05,
                 )
 
         """保存图片"""
+        plt.subplots_adjust(wspace=0, hspace=0.3)
         plt.tight_layout()
-        plt.subplots_adjust(wspace=0, hspace=0.1)
-        plt.savefig(self.path + "plot/lw_dpc_deffect.pdf")
+        plt.savefig(self.path + "plot/lw_dpc_deffect.pdf", bbox_inches="tight")
+        plt.show()
+
+    def show_clustering_results(self):
+        """
+        展示部分 Synthesis 数据集上每个聚类算法的聚类结果，3 x 3，对应图 3-5，3-6，3-7，3-8
+        数据集为 Flame，Jain，S2，Spiral
+        展示部分 Synthesis 数据集上每个聚类算法的聚类结果，2 x 2，对应图 3-5，3-6，3-7，3-8，3-8，3-9，3-10，3-11，3-12
+        数据集为 Flame，Jain，S2，Spiral
+        """
+        """不同数据集"""
+        data_name_list = ["flame", "jain", "S2", "spiral"]
+        _algorithm_list = [
+            "agglomerativeClustering",
+            "kmeans",
+            "dbscan",
+            "optics",
+            "spectralClustering",
+            "dpc",
+            "dpc_knn",
+            "snn_dpc",
+            "dpc_irho",
+        ]
+        self.font["size"] = 32
+        # data_name_list = ["flame", "jain", "S2", "spiral"]
+        # data_name_list = ["S2"]
+
+        # for data_name in ["flame", "jain", "S2", "spiral"]:
+        for data_name in ["spiral"]:
+            fig, axes = plt.subplots(3, 3, figsize=(18, 18))
+            for i in range(3):
+                for j in range(3):
+                    """绘图"""
+                    _show_data_algorithm(
+                        axes[i][j], self.path, data_name, _algorithm_list[i * 3 + j]
+                    )
+                    axes[i][j].set_title(
+                        PLOT_TITLE_NUM[i * 3 + j],
+                        self.font,
+                        y=-0.1,
+                    )
+            plt.tight_layout()
+            plt.subplots_adjust(wspace=0, hspace=0.2)
+            """保存图片"""
+            plt.savefig(self.path + "plot/3_3_" + data_name + ".pdf")
+            plt.show()
+
+        # for al in _algorithm_list:
+        #     fig, axes = plt.subplots(2, 2, figsize=(18, 18))
+        #     for i in range(2):
+        #         for j in range(2):
+        #             """绘图"""
+        #             _show_data_algorithm(
+        #                 axes[i][j], self.path, data_name_list[i * 2 + j], al
+        #             )
+        #             axes[i][j].set_title(
+        #                 PLOT_TITLE_NUM[i * 2 + j],
+        #                 self.font,
+        #                 y=-0.1,
+        #             )
+        #     plt.tight_layout()
+        #     plt.subplots_adjust(wspace=0, hspace=0.2)
+        #     """保存图片"""
+        #     plt.savefig(self.path + "plot/2_2_" + al + ".pdf")
+        #     plt.show()
+
+    def _show_data(self, plot, data_name):
+        """
+        绘制一个数据集上原始分布
+        Args:
+            plot (_type_): 绘图句柄
+            data_name (_type_): 数据集名称
+        """
+        """原始数据"""
+        data = pandas.read_csv(self.path + "analyze/" + data_name + ".csv")
+        col = list(data.columns)
+        """分离原始数据与原始标签"""
+        origin_data = data.loc[:, col[0:-1]]
+        origin_label = data[col[-1]]
+
+        """收集样本"""
+        cluster_result = {k: list() for k in set(origin_label)}
+        for i in range(len(origin_label)):
+            cluster_result[origin_label[i]].append(i)
+
+        """聚类结果字典"""
+        cluster_points = dict()
+        colors = dict()
+        numpy.random.seed(SEED_NUM)
+
+        for k, v in cluster_result.items():
+            """同一类中的点"""
+            cluster_points[k] = data.loc[cluster_result[k], :]
+            colors[k] = numpy.random.rand(3).reshape(1, -1)
+
+        """绘图"""
+        idx = 0
+        for k, v in cluster_points.items():
+            plot.scatter(
+                v.loc[:, col[0]], v.loc[:, col[1]], c=colors[k], s=64, marker="."
+            )
+            idx += 1
+
+        """图像设置"""
+        font = {
+            "family": "Times New Roman",
+            "size": 12,
+        }
+        plot.get_figure().subplots_adjust(left=0.1, right=0.95, top=1, bottom=0)
+        plot.axis("off")
+        plot.spines["right"].set_color("none")
+        plot.spines["top"].set_color("none")
+        plot.set_xlim(-0.03, 1.03)
+        plot.set_ylim(-0.03, 1.03)
+        plot.set_xticks(())
+        plot.set_yticks(())
+        plot.set_aspect(1)
+
+    def show_clustering_results_data(self):
+        """
+        数据集为 Flame，Jain，S2，Spiral
+        """
+        """不同数据集"""
+        # data_name_list = ["flame", "jain", "S2", "spiral"]
+        data_name_list = ["flame", "jain", "S2", "spiral"]
+
+        self.font["size"] = 20
+        global SEED_NUM
+        SEED_NUM = 5
+        fig, axes = plt.subplots(2, 2, figsize=(12, 13))
+        for i in range(2):
+            for j in range(2):
+                """绘图"""
+                self._show_data(axes[i][j], data_name_list[i * 2 + j])
+                axes[i][j].set_title(
+                    PLOT_TITLE_NUM[i * 2 + j],
+                    self.font,
+                    y=-0.05,
+                )
+        plt.subplots_adjust(wspace=0, hspace=0.3)
+        plt.tight_layout()
+        """保存图片"""
+        plt.savefig(self.path + "plot/原始3.pdf")
+        plt.show()
+
+    def show_dpc_clustering_results(self):
+        """
+        展示部分 Synthesis 数据集上每个 dpc 算法的聚类结果，3 x 3，对应图 4-6，4-7，4-8，4-9
+        数据集为 Aggregation，D31，Jain，R15
+        """
+        """不同数据集"""
+        _algorithm_list = [
+            "dpc",
+            "dpc_knn",
+            "snn_dpc",
+            "dpc_ckrod",
+            "dpc_irho",
+            "dpc_iass",
+        ]
+        self.font["size"] = 24
+
+        # for data_name in ["Aggregation", "D31", "Jain", "R15"]:
+        #     fig, axes = plt.subplots(2, 3, figsize=(18, 13))
+        #     for i in range(2):
+        #         for j in range(3):
+        #             """绘图"""
+        #             _show_data_algorithm(
+        #                 axes[i][j], self.path, data_name, _algorithm_list[i * 3 + j]
+        #             )
+        #             axes[i][j].set_title(
+        #                 PLOT_TITLE_NUM[i * 3 + j],
+        #                 self.font,
+        #                 y=-0.1,
+        #             )
+
+        #     """保存图片"""
+        #     plt.tight_layout()
+        #     plt.subplots_adjust(wspace=0, hspace=0.2)
+        #     plt.savefig(
+        #         self.path + "plot/2_3_" + data_name + ".pdf", bbox_inches="tight"
+        #     )
+        #     plt.show()
+        # data_name_list = ["Aggregation", "D31", "Jain", "R15"]
+        data_name_list = ["Aggregation"]
+
+        for data_name in data_name_list:
+            fig, axes = plt.subplots(3, 2, figsize=(12, 19))
+            for i in range(3):
+                for j in range(2):
+                    """绘图"""
+                    _show_data_algorithm(
+                        axes[i][j], self.path, data_name, _algorithm_list[i * 2 + j]
+                    )
+                    axes[i][j].set_title(
+                        PLOT_TITLE_NUM[i * 2 + j],
+                        self.font,
+                        y=-0.1,
+                    )
+
+            """保存图片"""
+            plt.tight_layout()
+            plt.subplots_adjust(wspace=0, hspace=0.2)
+            plt.savefig(
+                self.path + "plot/3_2_" + data_name + ".pdf", bbox_inches="tight"
+            )
+            plt.show()
+
+    def show_dpc_clustering_results_data(self):
+        """
+        数据集为 Aggregation，D31，Jain，R15
+        """
+        """不同数据集"""
+        data_name_list = ["Aggregation", "D31", "Jain", "R15"]
+
+        self.font["size"] = 20
+        global SEED_NUM
+        SEED_NUM = 6
+        fig, axes = plt.subplots(2, 2, figsize=(12, 13))
+        for i in range(2):
+            for j in range(2):
+                """绘图"""
+                self._show_data(axes[i][j], data_name_list[i * 2 + j])
+                axes[i][j].set_title(
+                    PLOT_TITLE_NUM[i * 2 + j],
+                    self.font,
+                    y=-0.05,
+                )
+        plt.subplots_adjust(wspace=0, hspace=0.3)
+        plt.tight_layout()
+        """保存图片"""
+        plt.savefig(self.path + "plot/原始4.pdf")
         plt.show()
 
     def show_cluster_results(self):
@@ -997,7 +1242,7 @@ class PlotUci:
         self.font = {
             "family": "Times New Roman",
             # "color": "black",
-            "size": 16,
+            "size": 24,
         }
         """合成数据集"""
         self.synthesis_dataset_list = [
@@ -1194,9 +1439,366 @@ class PlotUci:
         for index_list in cluster_index.values():
             plot.plot(xticks, index_list, marker=".", linewidth=1, markersize=8)
 
+        plot.tick_params(axis="both", which="major", labelsize=16)
+        # plot.xaxis.label.set_fontsize(24)
+        # plot.yaxis.label.set_fontsize(24)
         plot.set_ylim(0, 1.05)
         plot.set_yticks(numpy.linspace(0, 1, 11))
+        self.font["size"] = 20
         plot.legend(dataset_list, loc="lower right", prop=self.font)
+
+    def tsne_data(self):
+        """
+        将 dataset.csv t-sne 化，转成二维数据集
+        """
+        now_path = "./result/uci/analyze/"
+        for dataset_name in os.listdir(now_path):
+            if dataset_name.find(".csv") == -1:
+                all_data = pandas.read_csv(now_path + dataset_name + ".csv")
+                col = list(all_data.columns)
+                data = all_data[col[0:-1]]
+                label = all_data[col[-1]]
+                """使用 t-SNE 进行降维"""
+                tsne = TSNE(n_components=2)
+                data_tsne = tsne.fit_transform(data)
+                save_data = (
+                    pandas.DataFrame(noramlized({"norm": 0}, data_tsne))
+                    .round(3)
+                    .join(label)
+                )
+                save_data.to_csv(
+                    now_path + "tsne_" + dataset_name + ".csv", index=False
+                )
+
+    def _show_data(self, plot, data_name):
+        """
+        绘制一个数据集上原始分布
+        Args:
+            plot (_type_): 绘图句柄
+            data_name (_type_): 数据集名称
+        """
+        """原始数据"""
+        data = pandas.read_csv(self.path + "analyze/tsne_" + data_name + ".csv")
+        col = list(data.columns)
+        """分离原始数据与原始标签"""
+        origin_data = data.loc[:, col[0:-1]]
+        origin_label = data[col[-1]]
+
+        """收集样本"""
+        cluster_result = {k: list() for k in set(origin_label)}
+        for i in range(len(origin_label)):
+            cluster_result[origin_label[i]].append(i)
+
+        """聚类结果字典"""
+        cluster_points = dict()
+        colors = dict()
+        numpy.random.seed(SEED_NUM)
+
+        for k, v in cluster_result.items():
+            """同一类中的点"""
+            cluster_points[k] = data.loc[cluster_result[k], :]
+            colors[k] = numpy.random.rand(3).reshape(1, -1)
+
+        """绘图"""
+        idx = 0
+        for k, v in cluster_points.items():
+            plot.scatter(
+                v.loc[:, col[0]], v.loc[:, col[1]], c=colors[k], s=64, marker="."
+            )
+            idx += 1
+
+        """图像设置"""
+        font = {
+            "family": "Times New Roman",
+            "size": 12,
+        }
+        plot.get_figure().subplots_adjust(left=0.1, right=0.95, top=1, bottom=0)
+        plot.axis("off")
+        plot.spines["right"].set_color("none")
+        plot.spines["top"].set_color("none")
+        plot.set_xlim(-0.03, 1.03)
+        plot.set_ylim(-0.03, 1.03)
+        plot.set_xticks(())
+        plot.set_yticks(())
+        plot.set_aspect(1)
+
+    def _show_data_algorithm(
+        self, plot, data_name, algorithm_name, pred_result_file=""
+    ):
+        """
+        绘制一个数据集上一个算法的聚类结果图
+        Args:
+            plot (_type_): 绘图句柄
+            data_name (_type_): 数据集名称
+            algorithm_list (_type_): 算法名称
+            pred_result_file (str): 预测结果文件。如果不指定，从 analyze 下获取；否则从 result 下加 pred_result_file 得到
+        """
+        """原始数据"""
+        data = pandas.read_csv(self.path + "analyze/tsne_" + data_name + ".csv")
+
+        """寻找 algorithm_name 对应的文件"""
+        file_name = ""
+        for file in os.listdir(self.path + "analyze/" + data_name):
+            if file.find(algorithm_name + "+") == 0:
+                file_name = file
+
+        """预测结果"""
+        if pred_result_file == "":
+            """从 analyze 下的 file_name 获取"""
+            with open(self.path + "analyze/" + data_name + "/" + file_name, "r") as f:
+                pred_result = json.load(f)
+        else:
+            """从 result 下的 pred_result_file 获取"""
+            with open(
+                self.path
+                + "result/"
+                + data_name
+                + "/"
+                + algorithm_name
+                + "/"
+                + pred_result_file,
+                "r",
+            ) as f:
+                pred_result = json.load(f)
+
+        label = pred_result["label"]
+        """将预测的标签写入到原始数据中"""
+        data["label"] = label
+        """列标签"""
+        col = list(data.columns)
+
+        """收集样本"""
+        cluster_result = {k: list() for k in set(label)}
+        for i in range(len(label)):
+            cluster_result[label[i]].append(i)
+
+        """聚类结果字典"""
+        cluster_points = dict()
+        colors = dict()
+        """12"""
+        numpy.random.seed(SEED_NUM)
+
+        for k, v in cluster_result.items():
+            """同一类中的点"""
+            cluster_points[k] = data.loc[cluster_result[k], :]
+            colors[k] = numpy.random.rand(3).reshape(1, -1)
+
+        """找出聚类中心"""
+        center = list()
+        if algorithm_name.find("dpc") != -1:
+            center = [data.loc[idx, :] for idx in pred_result["center"]]
+        elif algorithm_name.find("kmeans") != -1:
+            center = pred_result["center"]
+        center = numpy.array(center)
+
+        """绘图"""
+        idx = 0
+        for k, v in cluster_points.items():
+            plot.scatter(
+                v.loc[:, col[0]], v.loc[:, col[1]], c=colors[k], s=64, marker="."
+            )
+            if len(center) != 0:
+                plot.scatter(
+                    center[idx, 0], center[idx, 1], c=colors[k], s=1024, marker="*"
+                )
+                idx += 1
+
+        """图像设置"""
+        font = {"family": "Times New Roman", "size": 22}
+        """绘制聚类结果图"""
+        plot.get_figure().subplots_adjust(left=0.1, right=0.95, top=0.95, bottom=0.1)
+        plot.axis("off")
+        plot.spines["right"].set_color("none")
+        plot.spines["top"].set_color("none")
+        plot.set_xlim(-0.03, 1.03)
+        plot.set_ylim(-0.03, 1.03)
+        plot.set_xticks(())
+        plot.set_yticks(())
+        plot.set_aspect(1)
+        # plot.grid(linestyle="-", linewidth=0.1)
+
+    def show_clustering_results(self):
+        """
+        绘制第三章中 UCI 数据集的聚类结果
+        """
+        self.path = "./result/uci/"
+        """不同数据集"""
+        SEED_NUM = 10
+        data_name_list = [
+            "dermatology",
+            "glass",
+            "iris",
+            "isolet",
+            "lung",
+            "parkinsons",
+            "segment",
+            "wine",
+        ]
+        """算法列表"""
+        _algorithm_list = [
+            "",
+            "agglomerativeClustering",
+            "kmeans",
+            # "dbscan",
+            "optics",
+            "spectralClustering",
+            "dpc",
+            "dpc_knn",
+            "snn_dpc",
+            "dpc_irho",
+        ]
+        self.font["size"] = 32
+
+        for data_name in data_name_list:
+            fig, axes = plt.subplots(3, 3, figsize=(18, 18))
+            for i in range(3):
+                for j in range(3):
+                    # print(_algorithm_list[i * 3 + j])
+                    """绘图"""
+                    if i == 0 and j == 0:
+                        self._show_data(axes[i][j], data_name)
+                        axes[i][j].set_title(
+                            PLOT_TITLE_NUM[i * 3 + j],
+                            self.font,
+                            y=-0.15,
+                        )
+                    else:
+                        self._show_data_algorithm(
+                            axes[i][j], data_name, _algorithm_list[i * 3 + j]
+                        )
+                        axes[i][j].set_title(
+                            PLOT_TITLE_NUM[i * 3 + j],
+                            self.font,
+                            y=-0.15,
+                        )
+                    SEED_NUM += 1
+            plt.tight_layout()
+            plt.subplots_adjust(wspace=0, hspace=0.3)
+            """保存图片"""
+            plt.savefig(
+                self.path + "plot/1_2_" + data_name + ".pdf", bbox_inches="tight"
+            )
+            plt.show()
+
+    def show_lwdpc_effect(self):
+        """
+        绘制第三章中 UCI 部分数据集的聚类结果
+        """
+        self.path = "./result/uci/"
+        """不同数据集"""
+        global SEED_NUM
+        SEED_NUM = 12
+        data_name_list = [
+            # "dermatology",
+            # "glass",
+            "iris",
+            # "isolet",
+            # "lung",
+            # "parkinsons",
+            # "segment",
+            "wine",
+            "seeds",
+        ]
+        """算法列表"""
+        _algorithm_list = [
+            # "",
+            # "agglomerativeClustering",
+            # "kmeans",
+            # "dbscan",
+            # "optics",
+            # "spectralClustering",
+            # "dpc",
+            # "dpc_knn",
+            "snn_dpc",
+            "dpc_irho",
+        ]
+
+        self.font["size"] = 24
+
+        acc_list = ["0.9690", "0.9710", "0.9761", "0.9706"]
+
+        # for data_name in data_name_list:
+        fig, axes = plt.subplots(3, 2, figsize=(12, 19))
+        for i in range(3):
+            for j in range(2):
+                """绘图"""
+                _show_data_algorithm(
+                    axes[i][j], self.path, data_name_list[i], _algorithm_list[j]
+                )
+                axes[i][j].set_title(
+                    PLOT_TITLE_NUM[i * 2 + j],
+                    self.font,
+                    y=-0.1,
+                )
+
+            """保存图片"""
+        plt.subplots_adjust(wspace=0, hspace=0.3)
+        plt.tight_layout()
+        plt.savefig(
+            self.path + "plot/lw_dpc_deffect" + "1" + ".pdf",
+            bbox_inches="tight",
+        )
+        plt.show()
+
+    def show_dpc_clustering_results(self):
+        """
+        绘制第四章中 UCI 数据集的聚类结果
+        """
+        self.path = "./result/uci/"
+        """不同数据集"""
+        data_name_list = [
+            "dermatology",
+            "isolet",
+            "lung",
+            "seeds",
+            "sonar",
+            "segment",
+            "wdbc",
+            "tox171",
+        ]
+        """不同算法"""
+        _algorithm_list = [
+            "",
+            "kmeans",
+            "spectralClustering",
+            "dpc",
+            "dpc_knn",
+            "snn_dpc",
+            "dpc_ckrod",
+            "dpc_irho",
+            "dpc_iass",
+        ]
+
+        self.font["size"] = 32
+        SEED_NUM = 1
+
+        for data_name in data_name_list:
+            fig, axes = plt.subplots(3, 3, figsize=(18, 18))
+            for i in range(3):
+                for j in range(3):
+                    """绘图"""
+                    if i == 0 and j == 0:
+                        self._show_data(axes[i][j], data_name)
+                        axes[i][j].set_title(
+                            PLOT_TITLE_NUM[i * 3 + j],
+                            self.font,
+                            y=-0.15,
+                        )
+                    else:
+                        self._show_data_algorithm(
+                            axes[i][j], data_name, _algorithm_list[i * 3 + j]
+                        )
+                        axes[i][j].set_title(
+                            PLOT_TITLE_NUM[i * 3 + j],
+                            self.font,
+                            y=-0.15,
+                        )
+                    SEED_NUM += 1
+            plt.tight_layout()
+            plt.subplots_adjust(wspace=0, hspace=0.3)
+            """保存图片"""
+            plt.savefig(self.path + "plot/2_3_" + data_name + ".pdf")
+            plt.show()
 
     def show_euc_k(self):
         """
@@ -1218,28 +1820,40 @@ class PlotUci:
         acc_dict, ami_dict, ari_dict, fmi_dict = self.gain_cluster_index(
             dataset_list, param_dict
         )
-
+        self.font["size"] = 24
         """绘图"""
-        fig, axes = plt.subplots(2, 2, figsize=(18, 18))
+        fig, axes = plt.subplots(2, 2, figsize=(12, 13.2))
+
         self._show_cluster_index(axes[0][0], acc_dict, dataset_list)
-        axes[0][0].set_title(PLOT_TITLE_NUM[0] + "ACC", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[0][0].set_title(PLOT_TITLE_NUM[0], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[0][0].set_xlabel(r"k", fontdict=self.font)
         axes[0][0].set_ylabel(r"ACC", fontdict=self.font)
+
         self._show_cluster_index(axes[0][1], ami_dict, dataset_list)
-        axes[0][1].set_title(PLOT_TITLE_NUM[1] + "AMI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[0][1].set_title(PLOT_TITLE_NUM[1], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[0][1].set_xlabel(r"k", fontdict=self.font)
         axes[0][1].set_ylabel(r"AMI", fontdict=self.font)
+
         self._show_cluster_index(axes[1][0], ari_dict, dataset_list)
-        axes[1][0].set_title(PLOT_TITLE_NUM[2] + "ARI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[1][0].set_title(PLOT_TITLE_NUM[2], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[1][0].set_xlabel(r"k", fontdict=self.font)
         axes[1][0].set_ylabel(r"ARI", fontdict=self.font)
+
         self._show_cluster_index(axes[1][1], fmi_dict, dataset_list)
-        axes[1][1].set_title(PLOT_TITLE_NUM[3] + "FMI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[1][1].set_title(PLOT_TITLE_NUM[3], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[1][1].set_xlabel(r"k", fontdict=self.font)
         axes[1][1].set_ylabel(r"FMI", fontdict=self.font)
 
         plt.tight_layout()
-        plt.subplots_adjust(wspace=0.1, hspace=0.18)
+        plt.subplots_adjust(wspace=0.2, hspace=0.25)
         plt.savefig("./result/uci/plot/euc_k.pdf", bbox_inches="tight")
         plt.show()
 
@@ -1260,28 +1874,40 @@ class PlotUci:
         acc_dict, ami_dict, ari_dict, fmi_dict = self.gain_cluster_index(
             dataset_list, param_dict
         )
+        self.font["size"] = 24
 
         """绘图"""
-        fig, axes = plt.subplots(2, 2, figsize=(18, 18))
+        fig, axes = plt.subplots(2, 2, figsize=(12, 13.2))
         self._show_cluster_index(axes[0][0], acc_dict, dataset_list)
-        axes[0][0].set_title(PLOT_TITLE_NUM[0] + "ACC", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[0][0].set_title(PLOT_TITLE_NUM[0], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[0][0].set_xlabel(r"k", fontdict=self.font)
         axes[0][0].set_ylabel(r"ACC", fontdict=self.font)
+
         self._show_cluster_index(axes[0][1], ami_dict, dataset_list)
-        axes[0][1].set_title(PLOT_TITLE_NUM[1] + "AMI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[0][1].set_title(PLOT_TITLE_NUM[1], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[0][1].set_xlabel(r"k", fontdict=self.font)
         axes[0][1].set_ylabel(r"AMI", fontdict=self.font)
+
         self._show_cluster_index(axes[1][0], ari_dict, dataset_list)
-        axes[1][0].set_title(PLOT_TITLE_NUM[2] + "ARI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[1][0].set_title(PLOT_TITLE_NUM[2], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[1][0].set_xlabel(r"k", fontdict=self.font)
         axes[1][0].set_ylabel(r"ARI", fontdict=self.font)
+
         self._show_cluster_index(axes[1][1], fmi_dict, dataset_list)
-        axes[1][1].set_title(PLOT_TITLE_NUM[3] + "FMI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[1][1].set_title(PLOT_TITLE_NUM[3], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[1][1].set_xlabel(r"k", fontdict=self.font)
         axes[1][1].set_ylabel(r"FMI", fontdict=self.font)
 
         plt.tight_layout()
-        plt.subplots_adjust(wspace=0.1, hspace=0.18)
+        plt.subplots_adjust(wspace=0.2, hspace=0.25)
         plt.savefig("./result/uci/plot/ckrod_k.pdf", bbox_inches="tight")
         plt.show()
 
@@ -1302,28 +1928,41 @@ class PlotUci:
         acc_dict, ami_dict, ari_dict, fmi_dict = self.gain_cluster_index(
             dataset_list, param_dict
         )
+        self.font["size"] = 24
 
         """绘图"""
-        fig, axes = plt.subplots(2, 2, figsize=(18, 18))
+        fig, axes = plt.subplots(2, 2, figsize=(12, 13.2))
+
         self._show_cluster_index(axes[0][0], acc_dict, dataset_list)
-        axes[0][0].set_title(PLOT_TITLE_NUM[0] + "ACC", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[0][0].set_title(PLOT_TITLE_NUM[0], self.font, y=-0.19)
+        self.font["size"] = 24
         axes[0][0].set_xlabel(r"$\mu$", fontdict=self.font)
         axes[0][0].set_ylabel(r"ACC", fontdict=self.font)
+
         self._show_cluster_index(axes[0][1], ami_dict, dataset_list)
-        axes[0][1].set_title(PLOT_TITLE_NUM[1] + "AMI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[0][1].set_title(PLOT_TITLE_NUM[1], self.font, y=-0.19)
+        self.font["size"] = 24
         axes[0][1].set_xlabel(r"$\mu$", fontdict=self.font)
         axes[0][1].set_ylabel(r"AMI", fontdict=self.font)
+
         self._show_cluster_index(axes[1][0], ari_dict, dataset_list)
-        axes[1][0].set_title(PLOT_TITLE_NUM[2] + "ARI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[1][0].set_title(PLOT_TITLE_NUM[2], self.font, y=-0.19)
+        self.font["size"] = 24
         axes[1][0].set_xlabel(r"$\mu$", fontdict=self.font)
         axes[1][0].set_ylabel(r"ARI", fontdict=self.font)
+
         self._show_cluster_index(axes[1][1], fmi_dict, dataset_list)
-        axes[1][1].set_title(PLOT_TITLE_NUM[3] + "FMI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[1][1].set_title(PLOT_TITLE_NUM[3], self.font, y=-0.19)
+        self.font["size"] = 24
         axes[1][1].set_xlabel(r"$\mu$", fontdict=self.font)
         axes[1][1].set_ylabel(r"FMI", fontdict=self.font)
 
         plt.tight_layout()
-        plt.subplots_adjust(wspace=0.1, hspace=0.18)
+        plt.subplots_adjust(wspace=0.2, hspace=0.25)
         plt.savefig("./result/uci/plot/ckrod_mu.pdf", bbox_inches="tight")
         plt.show()
 
@@ -1355,28 +1994,41 @@ class PlotUci:
         acc_dict, ami_dict, ari_dict, fmi_dict = self.gain_cluster_index(
             dataset_list, param_dict
         )
+        self.font["size"] = 24
 
         """绘图"""
-        fig, axes = plt.subplots(2, 2, figsize=(18, 18))
+        fig, axes = plt.subplots(2, 2, figsize=(12, 13.2))
+
         self._show_cluster_index(axes[0][0], acc_dict, dataset_list)
-        axes[0][0].set_title(PLOT_TITLE_NUM[0] + "ACC", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[0][0].set_title(PLOT_TITLE_NUM[0], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[0][0].set_xlabel(r"random state", fontdict=self.font)
         axes[0][0].set_ylabel(r"ACC", fontdict=self.font)
+
         self._show_cluster_index(axes[0][1], ami_dict, dataset_list)
-        axes[0][1].set_title(PLOT_TITLE_NUM[1] + "AMI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[0][1].set_title(PLOT_TITLE_NUM[1], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[0][1].set_xlabel(r"random state", fontdict=self.font)
         axes[0][1].set_ylabel(r"AMI", fontdict=self.font)
+
         self._show_cluster_index(axes[1][0], ari_dict, dataset_list)
-        axes[1][0].set_title(PLOT_TITLE_NUM[2] + "ARI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[1][0].set_title(PLOT_TITLE_NUM[2], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[1][0].set_xlabel(r"random state", fontdict=self.font)
         axes[1][0].set_ylabel(r"ARI", fontdict=self.font)
+
         self._show_cluster_index(axes[1][1], fmi_dict, dataset_list)
-        axes[1][1].set_title(PLOT_TITLE_NUM[3] + "FMI", self.font, y=-0.12)
+        self.font["size"] = 20
+        axes[1][1].set_title(PLOT_TITLE_NUM[3], self.font, y=-0.18)
+        self.font["size"] = 24
         axes[1][1].set_xlabel(r"random state", fontdict=self.font)
         axes[1][1].set_ylabel(r"FMI", fontdict=self.font)
 
         plt.tight_layout()
-        plt.subplots_adjust(wspace=0.1, hspace=0.18)
+        plt.subplots_adjust(wspace=0.2, hspace=0.25)
         plt.savefig("./result/uci/plot/sample_order.pdf", bbox_inches="tight")
         plt.show()
 
@@ -1520,6 +2172,7 @@ class PlotImage:
                         ),
                         cmap="gray",
                     )
+                    print(plot_center_dict[list_set_label[i]][j])
                 else:
                     """其他样本"""
                     axes[i][j].imshow(
@@ -1569,7 +2222,7 @@ class PlotImage:
         for k, v in center_dict.items():
             plot_center_dict[k] = random.sample(v, col_num)
             print(k, plot_center_dict[k])
-            
+
         fig, axes = plt.subplots(row_num, col_num, figsize=(col_num, row_num))
 
         for i in range(row_num):
@@ -1590,6 +2243,7 @@ class PlotImage:
                         ),
                         cmap="gray",
                     )
+                    print(plot_center_dict[list_set_label[i]][j])
                 else:
                     """其他样本"""
                     axes[i][j].imshow(
@@ -1622,11 +2276,11 @@ class PlotImage:
         """coil20 数据集"""
         data_name = "coil20"
         """要画多少列，包括聚类中心"""
-        col_num = 17
+        col_num = 12
         """指定文件名"""
         file_name = "dem_1__k_34__mu_29.json"
 
-        self._show_image(data_name, file_name, col_num, 10)
+        self._show_image(data_name, file_name, col_num, 12)
 
     def show_jaffe(self):
         """
@@ -1635,7 +2289,7 @@ class PlotImage:
         """jaffe 数据集"""
         data_name = "jaffe"
         """要画多少列，包括聚类中心"""
-        col_num = 16
+        col_num = 10
         """指定文件名"""
         file_name = "dem_0__k_23__mu_30.json"
 
@@ -1648,7 +2302,7 @@ class PlotImage:
         """mnist_test 数据集"""
         data_name = "MNIST_test"
         """要画多少列，包括聚类中心"""
-        col_num = 21
+        col_num = 15
         """指定文件名"""
         file_name = ""
 
@@ -1663,7 +2317,7 @@ class PlotImage:
         """usps 数据集"""
         data_name = "usps"
         """要画多少列，包括聚类中心"""
-        col_num = 23
+        col_num = 15
         """指定文件名"""
         file_name = ""
 
@@ -1687,48 +2341,86 @@ class MyPlot:
         self.font = {
             "family": "Times New Roman",
             "color": "black",
-            "size": 18,
+            "size": 24,
         }
         self.config = {
             "font.family": "serif",
-            "font.size": 12,
+            "font.size": 13,
             "mathtext.fontset": "stix",
             "font.serif": ["SimSun"],
         }
         rcParams.update(self.config)
 
+    def show_data_increase(self):
+        """
+        展示全球数据增长，对应图 1-2
+        """
+        data = {
+            "CN": [23.88, 30.02, 38.00, 47.89, 60.81, 76.60],
+            "NA": [28.05, 34.55, 42.18, 52.41, 64.13, 79.54],
+            "GA": [51.73, 61.75, 73.34, 87.73, 105.33, 128.16],
+        }
+        labels = ["2022", "2023", "2024", "2025", "2026", "2027"]
+        x = range(len(labels))
+        width = 0.3
+
+        fig, ax = plt.subplots(figsize=(10, 8))
+        self.font["size"] = 13
+        ax.bar([i - width for i in x], data["CN"], width, label="中国")
+        ax.bar(x, data["NA"], width, label="北美")
+        ax.bar([i + width for i in x], data["GA"], width, label="全球其他地区")
+        for i, v in enumerate(data["CN"]):
+            ax.text(i - width, v + 0.5, str(v), ha="center", fontdict=self.font)
+
+        for i, v in enumerate(data["NA"]):
+            ax.text(i, v + 0.5, str(v), ha="center", fontdict=self.font)
+
+        for i, v in enumerate(data["GA"]):
+            ax.text(i + width, v + 0.5, str(v), ha="center", fontdict=self.font)
+
+        ax.set_xlabel("年份")
+        self.font["size"] = 17
+        ax.set_ylabel("Zettabyte", fontdict=self.font)
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels)
+        ax.legend()
+
+        plt.tight_layout()
+        plt.savefig("./result/image/plot/data_increase.pdf", bbox_inches="tight")
+        plt.show()
+
     def show_improve_rho(self):
         """
         对比局部密度的改进，对应图 3-4
         """
-        plt.scatter(RHO_COMPARE[:, 0], RHO_COMPARE[:, 1], s=24, c="r", marker=".")
+        plt.scatter(RHO_COMPARE[:, 0], RHO_COMPARE[:, 1], s=32, c="r", marker=".")
         ax = plt.gca()
         ax.spines["right"].set_color("none")
         ax.spines["top"].set_color("none")
 
-        plt.xlim(-0.5, 6.5)
-        plt.ylim(-0.5, 6.5)
+        plt.xlim(0.0, 6.5)
+        plt.ylim(0.0, 6.5)
         ax.set_aspect(1)
-        plt.grid(linestyle="-", linewidth=0.5)
+        plt.grid(linestyle="-", linewidth=0.2)
 
         """演示"""
         """两个密度中心"""
-        plt.scatter(2, 2, s=30, c="b", marker="*")
+        plt.scatter(2, 2, s=64, c="b", marker="*")
         self.font["color"] = "blue"
         plt.text(
-            2,
-            2,
+            2.05,
+            1.95,
             r"A",
             fontdict=self.font,
             verticalalignment="top",
             horizontalalignment="left",
         )
-        plt.scatter(4, 4, s=30, c="g", marker="x")
+        plt.scatter(4, 4, s=64, c="g", marker="*")
 
         self.font["color"] = "green"
         plt.text(
-            4,
-            4,
+            4.05,
+            3.95,
             r"B",
             fontdict=self.font,
             verticalalignment="top",
@@ -1736,14 +2428,14 @@ class MyPlot:
         )
 
         """在密度中心画圈"""
-        circle2 = plt.Circle((2, 2), 1, color="b", alpha=0.7, fill=False)
-        circle4 = plt.Circle((4, 4), 1, color="g", alpha=0.7, fill=False)
+        circle2 = plt.Circle((2, 2), 1.07, color="b", alpha=1.0, fill=False)
+        circle4 = plt.Circle((4, 4), 1.07, color="g", alpha=1.0, fill=False)
         plt.gcf().gca().add_artist(circle2)
         plt.gcf().gca().add_artist(circle4)
 
         """突出 A 的邻居"""
         self.font["color"] = "blue"
-        self.font["size"] = 10
+        self.font["size"] = 14
         plt.text(
             2,
             3,
@@ -1762,14 +2454,14 @@ class MyPlot:
         )
         plt.text(
             2,
-            1,
+            0.9,
             r"$A_3$",
             fontdict=self.font,
             verticalalignment="top",
             horizontalalignment="left",
         )
         plt.text(
-            3,
+            3.1,
             2,
             r"$A_4$",
             fontdict=self.font,
@@ -1779,7 +2471,7 @@ class MyPlot:
 
         """突出 B 的邻居"""
         self.font["color"] = "green"
-        self.font["size"] = 10
+        self.font["size"] = 14
         plt.text(
             4,
             5,
@@ -1798,15 +2490,15 @@ class MyPlot:
         )
         plt.text(
             4,
-            3,
+            2.9,
             r"$B_3$",
             fontdict=self.font,
             verticalalignment="top",
             horizontalalignment="left",
         )
         plt.text(
-            5,
-            4,
+            5.1,
+            4.0,
             r"$B_4$",
             fontdict=self.font,
             verticalalignment="top",
@@ -1815,7 +2507,7 @@ class MyPlot:
 
         """加点标注"""
         self.font["color"] = "black"
-        self.font["size"] = 14
+        self.font["size"] = 18
         plt.text(
             5,
             1,
@@ -1826,20 +2518,23 @@ class MyPlot:
         )
 
         plt.tight_layout()
-        plt.savefig(self.save_path + "rho_compare.svg", bbox_inches="tight")
+        plt.savefig(self.save_path + "rho_compare.pdf", bbox_inches="tight")
         plt.show()
 
     def show_domino_effect(self):
         """
-        一步分配策略中的多米诺效应演示图，可以用现成数据集，但不用跟别人的重复，对应图 2-5
+        一步分配策略中的多米诺效应演示图，可以用现成数据集，但不用跟别人的重复，对应图 2-6
         """
         # plt.axis("off")
+        self.font["size"] = 18
         ax = plt.gca()
         ax.spines["right"].set_color("none")
         ax.spines["top"].set_color("none")
 
-        plt.xlim(0, 1.0)
-        plt.ylim(0, 1.0)
+        plt.xlim(0, 1.05)
+        plt.ylim(0, 1.25)
+        plt.xticks(numpy.linspace(0, 1.0, 6))
+        plt.yticks(numpy.linspace(0, 1.2, 7))
 
         ax.set_aspect(1)
         """cluster1"""
@@ -1860,7 +2555,7 @@ class MyPlot:
         self.font["color"] = "green"
         plt.text(
             0.55,
-            0.05,
+            0.08,
             r"D",
             fontdict=self.font,
             verticalalignment="top",
@@ -1877,7 +2572,7 @@ class MyPlot:
         )
         plt.scatter(
             0.5,
-            0.95,
+            1.0,
             s=72,
             c="red",
             marker="*",
@@ -1885,7 +2580,7 @@ class MyPlot:
         self.font["color"] = "red"
         plt.text(
             0.53,
-            1.0,
+            1.05,
             r"A",
             fontdict=self.font,
             verticalalignment="top",
@@ -1896,10 +2591,10 @@ class MyPlot:
             0.5,
             0.49,
             s=36,
-            c="black",
+            c="green",
             marker=".",
         )
-        self.font["color"] = "black"
+        self.font["color"] = "green"
         plt.text(
             0.53,
             0.49,
@@ -1928,16 +2623,26 @@ class MyPlot:
         """画个箭头"""
         plt.arrow(
             0.5,
-            0.49,
+            0.495,
             0,
-            0.16,
+            0.145,
             length_includes_head=True,
             head_width=0.01,
             fc="b",
             ec="k",
         )
+        plt.tick_params(axis="both", which="major", labelsize=12)
+        """画个图例"""
+        # plt.text(
+        #     0.7,
+        #     0.7,
+        #     r"CCC",
+        #     fontdict=self.font,
+        #     # verticalalignment="top",
+        #     # horizontalalignment="left",
+        # )
         """标题"""
-        plt.title("Domino Effect", self.font, y=-0.15)
+        # plt.title("Domino Effect", self.font, y=-0.15)
 
         """保存图片"""
         plt.tight_layout()
@@ -1954,8 +2659,8 @@ class MyPlot:
         # ax.spines["right"].set_color("none")
         # ax.spines["top"].set_color("none")
 
-        plt.xlim(0, 14.5)
-        plt.ylim(-0.2, 12.5)
+        plt.xlim(-0.5, 15.5)
+        plt.ylim(-0.5, 12.8)
         plt.xticks([])
         plt.yticks([])
         ax.set_aspect(1)
@@ -2003,7 +2708,7 @@ class MyPlot:
         self.font["color"] = "red"
         plt.text(
             TWO_STEP_CLUSTERS["cluster2"][0, 0] + 0.4,
-            TWO_STEP_CLUSTERS["cluster2"][0, 1] - 0.2,
+            TWO_STEP_CLUSTERS["cluster2"][0, 1] + 0.1,
             r"聚类中心",
             # fontdict=self.font,
             verticalalignment="top",

@@ -1,8 +1,0 @@
-n_entradas= 56
-n_clases= 3
-n_arquivos= 1
-fich1= lung-cancer_R.dat
-n_patrons1= 32
-n_patrons_entrena= 16
-n_patrons_valida= 16
-n_conxuntos= 1

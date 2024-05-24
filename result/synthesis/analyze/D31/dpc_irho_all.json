@@ -1,1 +1,0 @@
-{"ACC": [0.965484], "AMI": [0.952823], "ARI": [0.930676], "NMI": [0.954998], "FMI": [0.932893], "FILE_NAME": ["dem_0__k_32__mu_10.json"], "cluster_acc": 0.965484, "adjusted_mutual_info": 0.952823, "adjusted_rand_index": 0.930676, "fowlkes_mallows_index": 0.932893, "normalized_mutual_info": 0.954998, "file_name": "dem_0__k_32__mu_10.json"}

@@ -1,8 +1,0 @@
-n_entradas= 16
-n_clases= 26
-n_arquivos= 1
-fich1= letter_R.dat
-n_patrons1= 20000
-n_patrons_entrena= 10000
-n_patrons_valida= 10000
-n_conxuntos= 1

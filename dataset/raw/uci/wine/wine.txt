@@ -1,8 +1,0 @@
-n_entradas= 13
-n_clases= 3
-n_arquivos= 1
-fich1= wine_R.dat
-n_patrons1= 178
-n_patrons_entrena= 89
-n_patrons_valida= 89
-n_conxuntos= 1
